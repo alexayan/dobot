@@ -1,0 +1,19 @@
+{
+	"name" : "dobot",
+	"version": "0.0.1",
+	"dependencies": {
+		"grunt": "latest",
+		"grunt-contrib-watch": "latest",
+		"grunt-contrib-concat": "latest",
+		"grunt-contrib-copy": "latest",
+		"grunt-contrib-uglify": "latest",
+		"grunt-contrib-jshint": "latest",
+		"grunt-contrib-csslint": "latest",
+		"grunt-contrib-cssmin": "latest",
+		"grunt-contrib-imagemin": "latest",
+		"load-grunt-tasks" : "latest",
+		"wiredep" : "latest",
+		"jshint-stylish": "latest"
+	},
+	"repository": {}
+}
