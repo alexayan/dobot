@@ -78,6 +78,40 @@ module.exports = function (grunt) {
         },
         wiredep : {
             src : ['app/index.html']
+        },
+        concurrent: {
+          server: [
+            'compass:server'
+          ],
+          dist: [
+            'compass:dist',
+            'imagemin',
+            'svgmin'
+          ]
+        },
+        connect: {
+            options: {
+                port: 8888,
+                hostname: 'localhost',
+                livereload: 35720
+            },
+            dev: {
+                options: {
+                    open: true,
+                    middleware: function (connect) {
+                        return [
+                          connect().use(
+                            '/bower_components',
+                            connect.static('./bower_components')
+                          ),
+                          connect().use(
+                            '/',
+                            connect.static('./app')
+                          ),
+                        ];
+                      }
+                }
+            }
         }
     });
     grunt.registerTask('default', ['csslint', 'jshint', 'imagemin', 'cssmin', 'concat', 'uglify']);
@@ -86,5 +120,11 @@ module.exports = function (grunt) {
     grunt.registerTask('test','test', function(){
         require('wiredep')({ src: 'app/index.html' });
     });
+    grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
+        grunt.task.run([
+          'connect',
+          'watch'
+        ]);
+      });
     grunt.registerTask('build',['concat', 'cssmin', 'uglify','imagemin']);
 };
