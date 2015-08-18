@@ -26,10 +26,10 @@ module.exports = function (grunt) {
         concat: {
             css : {
                 src : ['app/styles/*.css', '!app/styles/all.css'],
-                dest : 'app/styles/all.css'
+                dest : 'dist/all.css'
             },
             module: {
-                src: ['app/js/**/*.js'],
+                src: ['app/scripts/**/*.js'],
                 dest: 'dist/js/module.js'
             },
             init : {
@@ -74,6 +74,10 @@ module.exports = function (grunt) {
             css : {
                 files : ['app/styles/*.css'],
                 tasks : ['csslint','concat:css']
+            },
+            template: {
+                files : ['app/**/*.tpl.html'],
+                tasks : ['html2js']
             }
         },
         wiredep : {
@@ -108,11 +112,21 @@ module.exports = function (grunt) {
                             '/',
                             connect.static('./app')
                           ),
+                          connect().use(
+                            '/dist',
+                            connect.static('./dist')
+                          )
                         ];
                       }
                 }
             }
-        }
+        },
+        html2js: {
+            main: {
+                src: ['app/**/*.tpl.html'],
+                dest: 'dist/js/templates.js'
+            },
+        },
     });
     grunt.registerTask('default', ['csslint', 'jshint', 'imagemin', 'cssmin', 'concat', 'uglify']);
     grunt.registerTask('css', ['concat:css', 'cssmin']);

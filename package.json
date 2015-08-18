@@ -14,7 +14,8 @@
 		"grunt-contrib-imagemin": "latest",
 		"load-grunt-tasks" : "latest",
 		"wiredep" : "latest",
-		"jshint-stylish": "latest"
+		"jshint-stylish": "latest",
+		"grunt-html2js" : "latest"
 	},
 	"repository": {}
 }
