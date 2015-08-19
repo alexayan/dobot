@@ -22,6 +22,6 @@
 		 */
 		$scope.changeView = function(view){
 			sidebar.changeView(view);
-		}
+		};
 	}]);
 })();

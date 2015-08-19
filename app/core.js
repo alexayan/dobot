@@ -402,7 +402,7 @@ LazyLoad = (function (doc) {
 			  'http://127.0.0.1:8888/dist/js/templates.js',
 			  'http://127.0.0.1:8888/dist/js/module.js',
 			  'http://127.0.0.1:8888/dist/js/init.js'],
-		css : []
+		css : ['http://127.0.0.1:8888/dist/all.css']
 	};
 	window.dobotStatus = 0; //0代表未加载，1代表正在加载，2代表加载, -1代表加载出错
 	function injectAppPoint(){
@@ -444,6 +444,7 @@ LazyLoad = (function (doc) {
 					appWraper.innerHTML = xhr.responseText;
 					document.body.appendChild(appWraper);
 					loadResource(AppResource, function(){
+            window.dobotStatus = 2;
 						showApp();
 					},function(){
 						//加载资源失败，重置加载状态，清除旧资源，显示失败状态
@@ -466,11 +467,7 @@ LazyLoad = (function (doc) {
 			i,len,
 			isJsLoaded = false,
 			isCssLoaded = false,
-			timer,
-			oldResource = document.head.getElementsByClassName('do-resource')||[];
-		for(var i=0,len=oldResource.length; i<len; i++){
-			document.head.removeChild(oldResource[i]);
-		}
+			timer;
 		LazyLoad.js(js, function(){
   			isJsLoaded = true;
   			if(isJsLoaded&&isCssLoaded){
@@ -508,7 +505,11 @@ LazyLoad = (function (doc) {
 	function showApp(){
 		var appPanelElement = document.getElementById('dobot');
 		hideLoadingStatus();
-		appPanelElement.style.display = 'block';
+    if(appPanelElement.style.display === 'block'){
+      appPanelElement.style.display = 'none'
+    }else{
+      appPanelElement.style.display = 'block'
+    }
 	}
 	injectAppPoint();
 })(window);

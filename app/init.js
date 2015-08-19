@@ -10,7 +10,9 @@
 		'common.model',
 		'common.dialog',
 		'common.config',
+		'common.platform',
 		'common.translate',
+		'common.danmu',
 		'templates-main'
 	]).config(['$httpProvider', function($httpProvider){
 		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -48,10 +50,14 @@
 		$httpProvider.defaults.transformRequest = [function(data) {
 			return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
 		}];
-	}]).run(['$rootScope', 'DoModel',function($rootScope, model){
+	}]).run(['$rootScope', 'DoModel', 'DoPlatform', 'DoDanmu', function($rootScope, model, platform, danmu){
 		window.model = model;
 		$rootScope.user = true;
 		$rootScope.app = {isLoading:false, curView: 'dashboard'};
+		console.log(platform.current());
+		danmu.Receiver.addListener(function(data){
+			console.log(data);
+		});
 	}]);
 	angular.bootstrap(appRootElement, ['dobot']);
 })(window, angular);
