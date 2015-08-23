@@ -1,3 +1,20 @@
-<div id="do-header">
-	
-</div>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header col-md-3">
+      <a class="navbar-brand" href="http://dobot.sinaapp.com/">Dobot</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown" dropdown is-open="status.isopen">
+          <a href="#" dropdown-toggle role="button" aria-haspopup="true" aria-expanded="false">{{user.name}} <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+	        <li role="menuitem"><a href="#">账户管理</a></li>
+	        <li class="divider"></li>
+	        <li role="menuitem"><a href="#" ng-click="logout()">登出</a></li>
+	      </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

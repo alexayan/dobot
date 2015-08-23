@@ -6,14 +6,22 @@
 	var appRootElement = document.getElementById('dobot');
 	angular.module('dobot',[
 		'do.sidebar',
-		'common.tools',
+		'common.utils',
 		'common.model',
 		'common.dialog',
 		'common.config',
 		'common.platform',
-		'common.translate',
+		'common.i18n',
 		'common.danmu',
-		'templates-main'
+		'common.alert',
+		'common.user',
+		'templates-main',
+		'ui.bootstrap',
+		'ui.bootstrap.pagination',
+		'features.custom_command',
+		'uiSwitch',
+		'loginregister',
+		'header'
 	]).config(['$httpProvider', function($httpProvider){
 		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 		$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
@@ -50,14 +58,13 @@
 		$httpProvider.defaults.transformRequest = [function(data) {
 			return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
 		}];
-	}]).run(['$rootScope', 'DoModel', 'DoPlatform', 'DoDanmu', function($rootScope, model, platform, danmu){
-		window.model = model;
-		$rootScope.user = true;
-		$rootScope.app = {isLoading:false, curView: 'dashboard'};
-		console.log(platform.current());
-		danmu.Receiver.addListener(function(data){
-			console.log(data);
+	}]).run(['$rootScope', 'DoModel', 'DoPlatform', 'DoDanmu','DoUser', 'DoAlert',function($rootScope, model, platform, danmu, DoUser, DoAlert){
+		DoUser.current(function(user){
+			$rootScope.user = user;
+		},function(data){
+			$rootScope.user = null;
 		});
+		$rootScope.app = {isLoading:false, curView: 'dashboard'};
 	}]);
 	angular.bootstrap(appRootElement, ['dobot']);
 })(window, angular);

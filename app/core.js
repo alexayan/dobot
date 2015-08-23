@@ -397,12 +397,19 @@ LazyLoad = (function (doc) {
 	var AppResource = {
 		js : ['http://127.0.0.1:8888/bower_components/angular/angular.js',
 			  'http://127.0.0.1:8888/bower_components/angular-cookies/angular-cookies.js',
+        'http://127.0.0.1:8888/bower_components/angular-bootstrap/ui-bootstrap.js',
+        'http://127.0.0.1:8888/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+        'http://127.0.0.1:8888/bower_components/angular-ui-switch/angular-ui-switch.js',
 			  'http://127.0.0.1:8888/bower_components/ngDialog/js/ngDialog.js',
+        'http://127.0.0.1:8888/bower_components/angular-toasty/dist/angular-toasty.js',
 			  'http://127.0.0.1:8888/bower_components/angular-translate/angular-translate.js',
 			  'http://127.0.0.1:8888/dist/js/templates.js',
 			  'http://127.0.0.1:8888/dist/js/module.js',
 			  'http://127.0.0.1:8888/dist/js/init.js'],
-		css : ['http://127.0.0.1:8888/dist/all.css']
+		css : ['http://127.0.0.1:8888/dist/all.css',
+           'http://127.0.0.1:8888/bower_components/bootstrap/dist/css/bootstrap.css',
+           'http://cdn.bootcss.com/font-awesome/4.4.0/css/font-awesome.min.css',
+           'http://127.0.0.1:8888/bower_components/angular-toasty/dist/angular-toasty.css']
 	};
 	window.dobotStatus = 0; //0代表未加载，1代表正在加载，2代表加载, -1代表加载出错
 	function injectAppPoint(){
@@ -506,9 +513,9 @@ LazyLoad = (function (doc) {
 		var appPanelElement = document.getElementById('dobot');
 		hideLoadingStatus();
     if(appPanelElement.style.display === 'block'){
-      appPanelElement.style.display = 'none'
+      appPanelElement.style.display = 'none';
     }else{
-      appPanelElement.style.display = 'block'
+      appPanelElement.style.display = 'block';
     }
 	}
 	injectAppPoint();

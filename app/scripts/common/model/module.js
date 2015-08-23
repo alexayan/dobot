@@ -50,12 +50,7 @@
 	});
 
 	register_processor('$string', function(data){
-		data = parseInt(data);
-		if(isNaN(data)){
-			return true;
-		}else{
-			return false;
-		}
+		return ''+data;
 	}); 
 	register_processor('$email', function(data){
 		return /^.+@.+$/.test(data);
@@ -106,7 +101,7 @@
 	}
 	var _tag = true;
 	var module = angular.module('common.model',[]);
-	module.service('DoModel', ['$rootScope', 'DoTools', 'DoDialog', '$http', 'API_HOST', function($rootScope, tools, DoDialog, $http, API_HOST){
+	module.service('DoModel', ['$rootScope', 'DoTools', 'DoDialog', '$http', 'API_HOST', '$interpolate', function($rootScope, tools, DoDialog, $http, API_HOST, $interpolate){
 		function create_model(classname, classmethods, instancemethods, meta, inherit, func){
 			var Hehe = function(props){
 				if(typeof inherit == 'function'){
@@ -132,7 +127,7 @@
 			Hehe.__classname = classname;
 			if(!inherit || (!inherit.meta && !inherit._temp)){
 				inherit = function(){};
-				inherit.prototype.set_attr = function(name, value){
+				inherit.prototype.setAttr = function(name, value){
 					var that = this;
 					function _set(name, value){
 						if(that.meta[name] === undefined){
@@ -185,6 +180,20 @@
 					}
 					return true;
 				};
+				inherit.prototype.cancelEdit = function () {
+		          for (var prop in this._temp) {
+		            if (this._temp.hasOwnProperty(prop)) {
+		              this[prop] = this._temp[prop];
+		            }
+		          }
+		        };
+		        inherit.prototype.confirmEdit = function () {
+		          for (var prop in this.meta) {
+		            if (this.meta.hasOwnProperty(prop)) {
+		              this._temp[prop] = this[prop];
+		            }
+		          }
+		        };
 				inherit.prototype.toJSON = function(meta){
 					var res = {},
 						prop;
@@ -207,6 +216,9 @@
 				};
 				inherit.prototype.check_dirty = function(){
 					for(var prop in this.meta){
+						if(prop === 'id'){
+							continue;
+						}
 						if(this.meta.hasOwnProperty(prop)){
 							var old = this._temp[prop];
 							var n = this[prop];
@@ -216,15 +228,21 @@
 								}
 							}else{
 								if(this._dirty.indexOf(prop) !== -1){
-									this._dirty.splice(this._dirty.indexOf(prop));
+									this._dirty.splice(this._dirty.indexOf(prop),1);
 								}
 							}
 						}
 					}
 				};
-				inherit.prototype.update = function(){
+				inherit.prototype.get_dirty = function(){
+					var data={}, i, len;
+					for(i=0,len=this._dirty.length; i<len; i++){
+						data[this._dirty[i]] = this[this._dirty[i]];
+					}
+					return data;
+				};
+				inherit.prototype.save = function(){
 					if(!this.verify()){
-						ApDialog.verify_error_dialog();
 						return false;
 					}
 					this.check_dirty();
@@ -258,7 +276,7 @@
 					return this instanceof cls;
 				};
 			}
-			Hehe.prototype = merge(merge({},inherit.prototype), instancemethods, ['update']);
+			Hehe.prototype = merge(merge({},inherit.prototype), instancemethods, ['save']);
 			for(var prop in classmethods){
 				if(classmethods.hasOwnProperty(prop)){
 					Hehe[prop] = classmethods[prop];
@@ -409,10 +427,10 @@
 				}
 			};
 		}
-		function network_error_processor(){
-			console.log('network error');
+		function network_error_processor(error){
+			error && error({type:'error', message: '网络错误'});
 		}
-		function set_temp_if_update_success(model){
+		function set_temp_if_save_success(model){
 			for(var prop in model.meta){
 				if(model.meta.hasOwnProperty(prop)){
 					model._temp[prop] = model[prop];
@@ -425,26 +443,49 @@
 			login : function(data, success, error){
 				$http.post(API_HOST+'/login', data).success(function(data){
 					if(data.status === 'success'){
-						success && success(data);
+						success && success(new User(data.result));
 					}else if(data.status === 'error'){
 						error && error(data);
 					}
 				}).error(function(data){
-					network_error_processor();
+					network_error_processor(error);
 				});
 			},
 			register : function(data, success, error){
 				$http.post(API_HOST+'/register', data).success(function(data){
 					if(data.status === 'success'){
-						success && success(data);
+						success && success(new User(data.result));
 					}else if(data.status === 'error'){
 						error && error(data);
 					}
 				}).error(function(data){
-					network_error_processor();
+					network_error_processor(error);
+				});
+			},
+			current : function(success, error){
+				$http.get(API_HOST+'/currentuser').success(function(data){
+					if(data.status === 'success'){
+						success && success(new User(data.result));
+					}else if(data.status === 'error'){
+						error && error(data);
+					}
+				}).error(function(data){
+					network_error_processor(error);
 				});
 			}
 		},{
+			logout : function(success, error){
+				var that = this;
+				$http.get(API_HOST+'/logout').success(function(data){
+					if(data.status === 'success'){
+						success && success(that);
+					}else if(data.status === 'error'){
+						error && error(data);
+					}
+				}).error(function(data){
+					network_error_processor(error);
+				});
+			},
 			update : function(success, error){
 				
 			},
@@ -459,10 +500,101 @@
 			email : [],
 		},null);
 
+		var CustomCommand = create_model('CustomCommand', {
+			list : function(success, error){
+				$http.get(API_HOST+'/customcommand').success(function(data){
+					if(data.status === 'success'){
+						var res = new ModelArray();
+						for(var i=0,len=data.result.length;i<len;i++){
+							res.push(new CustomCommand(data.result[i]));
+						}
+						success && success(res);
+					}else if(data.status === 'error'){
+						error && error(data);
+					}
+				}).error(function(data){
+					network_error_processor(error);
+				});
+			},
+			create : function(data, success, error){
+				$http.post(API_HOST+'/customcommand', data).success(function(data){
+					if(data.status === 'success'){
+						success && success(new CustomCommand(data.result));
+					}else if(data.status === 'error'){
+						error && error(data);
+					}
+				}).error(function(data){
+					network_error_processor(error);
+				});
+			}
+		}, {
+			changeStatus : function(status){
+				this.setAttr('status', status);
+			},
+			save : function(success, error){
+				var data,
+					that = this;
+				if(this.id){
+					if(this._dirty.length === 0){
+						success(this);
+						return;
+					}
+					data = this.get_dirty();
+					$http.put(API_HOST+'/customcommand/'+this.id, data).success(function(data){
+						if(data.status === 'success'){
+							set_temp_if_save_success(that);
+							success && success(that);
+						}else if(data.status === 'error'){
+							error && error(data);
+						}
+					}).error(function(data){
+						network_error_processor(error);
+					});
+				}else{
+					data = this.toJSON(true);
+					$http.post(API_HOST+'/customcommand', data).success(function(data){
+						if(data.status === 'success'){
+							set_temp_if_save_success(that);
+							that.id = data.result.id;
+							success && success(that);
+						}else if(data.status === 'error'){
+							error && error(data);
+						}
+					}).error(function(data){
+						network_error_processor(error);
+					});
+				}
+			},
+			delete : function(success, error){
+				var that = this;
+				$http.delete(API_HOST+'/customcommand/'+this.id).success(function(data){
+					if(data.status === 'success'){
+						success && success(that);
+					}else if(data.status === 'error'){
+						error && error(data);
+					}
+				}).error(function(data){
+					network_error_processor(error);
+				});
+			},
+			process : function(ctx){
+				if(''+this.status === '1'){
+					return $interpolate(this.response)(ctx);
+				}
+			}
+		}, {
+			id : [],
+			name : [],
+			response : [],
+			auth : ['$string'],
+			status : ['$string'],
+			uid : []
+		}, null);
 
 		return {
 			ModelArray : ModelArray,
 			User : User,
+			CustomCommand : CustomCommand,
 			serialize : serialize,
 			deserialize : deserialize,
 		};

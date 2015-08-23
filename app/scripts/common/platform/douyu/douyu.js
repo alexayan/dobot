@@ -17,7 +17,10 @@
 				scope : $window,
 				name : 'retutn_gift'
 			},
-			sendDanmu : $window.sendmsg,
+			sendDanmu : function(message){
+				$("#chart_content")[0].value = message;
+				$window.sendmsg();
+			},
 			damnuDecode : function(danmu){
 				var data = $window.Sttdecode(danmu);
 				var name = DoTools.findObjectInArray(data, {name:'sender_nickname'})[0].value;

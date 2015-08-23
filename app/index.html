@@ -1,9 +1,9 @@
 <div id="dobot">
 	<!-- 控制面板 -->
-	<div id="do-control-panel" ng-if="user&&app.isLoading==false">
-		<div ng-include="'../app/scripts/header/header.tpl.html'"></div>
-		<div ng-include="'../app/scripts/sidebar/sidebar.tpl.html'"></div>
-		<div ng-switch="app.curView">
+	<div id="do-control-panel" ng-if="user&&app.isLoading==false" class="row">
+		<div ng-include="'../app/scripts/header/header.tpl.html'" id="do-header" class="col-md-12" ng-controller="DoHeaderController"></div>
+		<div ng-include="'../app/scripts/sidebar/sidebar.tpl.html'" id="do-sidebar" class="col-md-3"></div>
+		<div ng-switch="app.curView" id="do-body" class="col-md-9">
 			<div ng-switch-when="dashboard">
 				<div ng-include="'../app/scripts/features/dashboard/templates/main.tpl.html'"></div>
 			</div>
@@ -25,13 +25,21 @@
 		</div>
 	</div>
 	<!-- 登陆注册视图 -->
-	<div id="do-login-and-register" ng-if="!user&&app.isLoading==false">
-		这是登陆注册页
+	<div id="do-login-and-register" ng-if="!user&&app.isLoading==false" ng-controller="LoginRegisterController">
+		<div ng-switch="loginRegisterView">
+			<div ng-switch-when="login">
+				<div ng-include="'../app/scripts/loginregister/templates/login.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="register">
+				<div ng-include="'../app/scripts/loginregister/templates/register.tpl.html'"></div>
+			</div>
+		</div>
 	</div>
 	<!-- loading视图 -->
 	<div class="do-loading-common" ng-if="app.isLoading==true">
-		loading...
+		<h3>loading...</h3>
 	</div>
+	<toasty></toasty>
 	<!-- bower:js -->
 	<script src="../bower_components/angular/angular.js"></script>
 	<script src="../bower_components/angular-cookies/angular-cookies.js"></script>

@@ -1,8 +1,8 @@
-<ul id='do-sidebar' ng-controller='DoSidebarController'>
-	<li ng-click='changeView("dashboard")'>{{'DASHBOARD' | translate}}</li>
-	<li ng-click='changeView("timer")'>{{'TIMER' | translate}}</li>
-	<li ng-click='changeView("custom_command")'>{{'CUSTOM_COMMAND' | translate}}</li>
-	<li ng-click='changeView("message")'>{{'MESSAGE' | translate}}</li>
-	<li ng-click='changeView("music")'>{{'MUSIC' | translate}}</li>
-	<li ng-click='changeView("spam_protect")'>{{'SPAM_PROTECT' | translate}}</li>
+<ul ng-controller='DoSidebarController' class="nav nav-stacked">
+	<li ng-click='changeView("dashboard")' ng-class='{active: app.curView==="dashboard"}'><a href="javascript:;"><i class="fa fa-tachometer fa-lg"></i> {{'DASHBOARD' | translate}}</a></li>
+	<li ng-click='changeView("timer")' ng-class='{active: app.curView==="timer"}'><a href="javascript:;"><i class="fa fa-clock-o fa-lg"></i> {{'TIMER' | translate}}</a></li>
+	<li ng-click='changeView("custom_command")' ng-class='{active: app.curView==="custom_command"}'><a href="javascript:;"><i class="fa fa-hand-o-right fa-lg"></i> {{'CUSTOM_COMMAND' | translate}}</a></li>
+	<li ng-click='changeView("message")' ng-class='{active: app.curView==="message"}'><a href="javascript:;"><i class="fa fa-comments fa-lg"></i> {{'MESSAGE' | translate}}</a></li>
+	<li ng-click='changeView("music")' ng-class='{active: app.curView==="music"}'><a href="javascript:;"><i class="fa fa-music fa-lg"></i> {{'MUSIC' | translate}}</a></li>
+	<li ng-click='changeView("spam_protect")' ng-class='{active: app.curView==="spam_protect"}'><a href="javascript:;"><i class="fa fa-eye fa-lg"></i> {{'SPAM_PROTECT' | translate}}</a></li>
 </ul>

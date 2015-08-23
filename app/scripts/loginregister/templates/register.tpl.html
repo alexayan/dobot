@@ -1,0 +1,18 @@
+<div class="modal-content">
+	<div class="modal-header">
+        <h3 class="modal-title">注册<a href="http://www.dobot.sinaapp.com" class="yl-gb" target="_blank">Dobot</a>账号<a href="javascript:;" class="login yl-gb" ng-click="switchLoginRegisterView('login')">登陆</a></h3>
+    </div>
+    <div class="modal-body">
+    	<div class="input-group col-md-6">
+            <span class="input-group-addon"><i class="fa fa-user fa-lg"></i></span>
+            <input type="text" class="form-control" id="register_name" placeholder="用户名" ng-model="registerPost.name">
+        </div>
+        <div class="input-group col-md-6">
+            <span class="input-group-addon"><i class="fa fa-key fa-lg"></i></span>
+            <input type="password" class="form-control" id="register_password" placeholder="密码" ng-model="registerPost.password">
+        </div>
+    </div>
+    <div class="modal-footer"> 
+        <button class="btn do-btn-bw" type="button" ng-click="register()">注册</button>
+    </div>
+</div>

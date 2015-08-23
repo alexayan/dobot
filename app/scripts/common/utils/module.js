@@ -1,5 +1,5 @@
 (function(){
-	var module = angular.module('common.tools',[]);
+	var module = angular.module('common.utils',[]);
 	module.service('DoTools', ['$rootScope',function($rootScope){
 		/**
 		 * 函数注入

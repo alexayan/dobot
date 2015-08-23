@@ -4,7 +4,7 @@
  */
 (function(){
 	var module = angular.module('common.danmu',[]);
-	module.service('DoDanmu', ['DoPlatform', 'DoTools', '$timeout', '$interval', function(DoPlatform, DoTools, $timeout, $interval){
+	module.service('DoDanmu', ['DoPlatform', 'DoTools', '$timeout', '$interval', '$rootScope',function(DoPlatform, DoTools, $timeout, $interval, $rootScope){
 		var platform = DoPlatform.current();
 		/**
 		 * 消息发送管理
@@ -28,6 +28,7 @@
 						i = $timeout(send, interval);
 					}else{
 						$timeout.cancel(i);
+						status = false;
 					}
 				}
 				i = $timeout(send, interval);
@@ -39,6 +40,9 @@
 			function setInterval(i){
 				interval = i;
 			}
+			$rootScope.$on('UserLogout', function(){
+				arr = [];
+			});
 			return {
 				'send' : send,
 				'start' : start,
@@ -53,6 +57,9 @@
 				i = null,
 				interval = 600, //过小会引起阻塞，应该随着当前弹幕增加速率变化。当弹幕变多时，应该增加。
 				optimizationMode = 'auto';
+			$rootScope.$on('UserLogout', function(){
+				tasks = [];
+			});
 			function addListener(func){
 				tasks.push(func);
 				if(!i){
@@ -72,6 +79,7 @@
 				}
 			}
 			function injector(data){
+				console.log(data);
 				if(tasks.length === 0){
 					return;
 				}

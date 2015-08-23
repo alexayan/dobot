@@ -4,7 +4,7 @@
  * i18n
  */
 (function(){
-  var module = angular.module('common.translate',['pascalprecht.translate']);
+  var module = angular.module('common.i18n',['pascalprecht.translate']);
   module.config(function ($translateProvider) {
     $translateProvider.translations('en', {
       DASHBOARD : 'Dashboard'

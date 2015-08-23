@@ -1,3 +1,29 @@
-<div id="do-custom-command">
-	custom command
+<div id="do-custom-command" ng-controller="CustomCommandController">
+	<div class="row do-header">
+		<div class="col-md-3">
+	      <input type="text" class="form-control" placeholder="搜素..." ng-model="query" tooltip-placement="bottom" tooltip="可以输入启用或禁用来筛选相应状态的所有指令:)" tooltip-class="do-tooltip" tooltip-popup-delay='200'>
+	    </div>
+	    <button type="button" class="btn btn-default pull-right" ng-click="newCommand()">+ 添加指令</button>
+	</div>
+	<table class="table table-hover">
+	  	<thead>
+			<tr>
+	  			<td>命令</td>
+				<td>响应</td>
+	  			<td>权限</td>
+	  			<td>操作</td>
+	  		</tr>
+	  	</thead>
+		<tbody>
+	  		<tr ng-repeat="command in pageCommands" ng-controller="CustomCommandDetailController">
+	  			<td><i class="fa fa-ban" ng-hide="enabled" tooltip="禁用" tooltip-class="do-tooltip"></i>{{command.name}}</td>
+	  			<td>{{command.response}}</td>
+	  			<td>{{command.auth|CommandAuthBeauty}}</td>
+	  			<td><switch tooltip-class="do-tooltip" tooltip-popup-delay='500' tooltip="{{switchTooltip}}" ng-model="enabled" class="green"></switch><button tooltip-popup-delay='500' tooltip-class="do-tooltip" tooltip="修改指令" type="button" class="btn btn-info btn-xs" ng-click="editCommand(command)"><i class="fa fa-edit"></i></button> <button ng-click="deleteCommand(command)" tooltip-class="do-tooltip" tooltip-popup-delay='500' tooltip="删除指令" type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i></button></td>
+	  		</tr>
+	  	</tbody>
+	</table>
+	<div class="nav" ng-show="pageCommands.length>0">
+		<div pagination total-items="tempCommands.length" items-per-page="pagination.pageNumbers" ng-model="pagination.currentPage" num-pages="pagination.totalPages" first-text="首页" last-text="尾页" previous-text="上一页" next-text="下一页" rotate="true" ng-change="pagination.pageChanged()"></div>
+	</div>
 </div>
