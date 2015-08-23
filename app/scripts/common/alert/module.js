@@ -4,5 +4,5 @@
  */
 (function(){
 	'use strict';
-	var module = angular.module('common.alert',['common.alert.controller','common.alert.service']);
+	var module = angular.module('common.alert',['common.alert.service']);
 })(); 
