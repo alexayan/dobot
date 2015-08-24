@@ -9,8 +9,12 @@
 		    <input type="text" class="form-control" id="command_name" placeholder="请以英文字符!开头" ng-model="command.name">
 		</div>
 		<div class="form-group">
+		    <label for="command_desc">指令描述:</label>
+		    <input type="text" class="form-control" id="command_desc" placeholder="请输入指令的功能描述" ng-model="command.description">
+		</div>
+		<div class="form-group">
 		    <label for="command_response">响应:</label>
-		    <input type="text" class="form-control" id="command_response" placeholder="请输入指令关联的回复" ng-model="command.response">
+		    <input type="text" class="form-control" id="command_response" placeholder="请输入指令关联的回复" ng-model="command.response" tooltip-placement="top" tooltip="{{response_tooltip}}" tooltip-class="do-tooltip" tooltip-popup-delay='200'>
 		</div>
 		<div class="form-group">
 		    <label for="command_auth">权限:</label>

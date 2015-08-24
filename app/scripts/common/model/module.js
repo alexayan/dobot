@@ -101,7 +101,7 @@
 	}
 	var _tag = true;
 	var module = angular.module('common.model',[]);
-	module.service('DoModel', ['$rootScope', 'DoTools', 'DoDialog', '$http', 'API_HOST', '$interpolate', function($rootScope, tools, DoDialog, $http, API_HOST, $interpolate){
+	module.service('DoModel', ['$rootScope', 'DoTools', '$http', 'API_HOST', '$interpolate', function($rootScope, tools, $http, API_HOST, $interpolate){
 		function create_model(classname, classmethods, instancemethods, meta, inherit, func){
 			var Hehe = function(props){
 				if(typeof inherit == 'function'){
@@ -588,6 +588,7 @@
 			response : [],
 			auth : ['$string'],
 			status : ['$string'],
+			description : [],
 			uid : []
 		}, null);
 

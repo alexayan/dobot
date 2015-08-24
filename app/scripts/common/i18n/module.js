@@ -12,10 +12,11 @@
     $translateProvider.translations('cn', {
       DASHBOARD : 'Dashboard',
       TIMER : '定时器',
-      CUSTOM_COMMAND : '自定义命令',
+      CUSTOM_COMMAND : '自定义指令',
       MESSAGE : '留言',
       MUSIC : '音乐',
-      SPAM_PROTECT : '弹幕监控'
+      SPAM_PROTECT : '弹幕监控',
+      SYSTEM_COMMAND : '系统指令'
     });
     $translateProvider.preferredLanguage('cn');
   });

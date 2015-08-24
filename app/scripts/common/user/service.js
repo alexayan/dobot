@@ -5,7 +5,7 @@
 (function(){
 	'use strict';
 	var module = angular.module('common.user.service',[]);
-	module.service('DoUser', ['DoModel', '$rootScope',function(model, $rootScope){
+	module.service('DoUser', ['DoModel', '$rootScope', 'DoPlatform', function(model, $rootScope, platform){
 		var user;
 		function login(data, success, error){
 			model.User.login(data, function(res){

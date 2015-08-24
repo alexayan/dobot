@@ -8,7 +8,6 @@
 		'do.sidebar',
 		'common.utils',
 		'common.model',
-		'common.dialog',
 		'common.config',
 		'common.platform',
 		'common.i18n',
@@ -21,7 +20,8 @@
 		'features.custom_command',
 		'uiSwitch',
 		'loginregister',
-		'header'
+		'header',
+		'features.system_command'
 	]).config(['$httpProvider', function($httpProvider){
 		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 		$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';

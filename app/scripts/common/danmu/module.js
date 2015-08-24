@@ -13,7 +13,7 @@
 			var arr = [];
 			var status = false;
 			var i = null;
-			var interval = 6000;
+			var interval = 1000;
 			function send(message){
 				if(!status){
 					start();
@@ -79,7 +79,6 @@
 				}
 			}
 			function injector(data){
-				console.log(data);
 				if(tasks.length === 0){
 					return;
 				}

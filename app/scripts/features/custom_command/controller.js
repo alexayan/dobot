@@ -155,6 +155,7 @@
 			$scope.isEdit = false;
 			$scope.command = ccs.newCommand();
 		}
+		$scope.response_tooltip = "{{name}}代表指令请求者名字,{{message}}代表指令请求者发送的额外信息";
 		$scope.ok = function(){
 			if($scope.isEdit){
 				$scope.command.save(function(command){

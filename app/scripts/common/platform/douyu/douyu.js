@@ -4,7 +4,8 @@
  */
 (function(){
 	var module = angular.module('common.platform.douyu',['common.platform']);
-	module.run(['DoPlatform', '$window', 'DoTools', function(platform, $window, DoTools){
+	module.run(['DoPlatform', '$window', 'DoTools', '$document',function(platform, $window, DoTools, $document){
+		var prevMessage = '';
 		//注册斗鱼配置
 		platform.register('www.douyutv.com', {
 			domain : 'www.douyutv.com',
@@ -18,8 +19,21 @@
 				name : 'retutn_gift'
 			},
 			sendDanmu : function(message){
-				$("#chart_content")[0].value = message;
-				$window.sendmsg();
+				if(message===prevMessage){
+					message = message + '~';
+				}
+				$window.thisMovie( "WebRoom" ).js_sendmsg($window.Sttencode([{name:'content', value: message},{
+               		name: "scope",
+                	value:  0
+            	},
+            	{
+                	name: "col",
+               		value: 0
+            	},{
+        			name: "sender",
+        			value: platform.current().user().uid
+    			}]));
+    			prevMessage = message;
 			},
 			damnuDecode : function(danmu){
 				var data = $window.Sttdecode(danmu);
@@ -33,6 +47,27 @@
 					uid : uid,
 					content : content
 				};
+			},
+			user : function(){
+				if($SYS.uid && $SYS.uid){
+					return {
+						uid : $SYS.uid,
+						name : $SYS.name
+					};
+				}else{
+					return null;
+				}
+			},
+			room : function(){
+				if($ROOM){
+					return {
+						rid : $ROOM.room_id,
+						oid : $ROOM.owner_uid,
+						name : $ROOM.room_name
+					}
+				}else{
+					return null;
+				}
 			}
 		});
 	}]);

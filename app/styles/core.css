@@ -117,32 +117,32 @@
 	color: #5e5e5e;
 	background-color: #eeeeee;
 }
-#do-custom-command{
+#do-custom-command, #do-system-command{
 	padding-right: 30px;
 }
-#do-custom-command table{
+#do-custom-command table, #do-system-command table{
 	border-right: none;
 }
-#do-custom-command table tr td{
+#do-custom-command table tr td, #do-system-command table tr td{
 	position: relative;
 }
-#do-custom-command table tr.disabled{
+#do-custom-command table tr.disabled, #do-system-command table tr.disabled{
 	background-color: #fef5f9;
 }
-#do-custom-command table .btn-info{
+#do-custom-command table .btn-info, #do-system-command table .btn-info{
 	margin-left: 48px;
 }
-#do-custom-command .nav{
+#do-custom-command .nav, #do-system-command .nav{
 	text-align: center;
 }
-#do-custom-command .do-header{
+#do-custom-command .do-header, #do-system-command .do-header{
     margin-top: 15px;
     margin-bottom: 15px;
 }
-#do-custom-command .do-header button{
+#do-custom-command .do-header button, #do-system-command .do-header button{
 	margin-right: 15px;
 }
-#do-custom-command i.fa.fa-ban{
+#do-custom-command i.fa.fa-ban, #do-system-command i.fa.fa-ban{
 	position: absolute;
     top: 11px;
     left: -14px;
@@ -217,4 +217,8 @@
 }
 .yl-gb:hover{
 	color: #000!important;
+}
+.modal-backdrop.in{
+	opacity: 0.2!important;
+	filter: alpha(opacity=20) !important;
 }
