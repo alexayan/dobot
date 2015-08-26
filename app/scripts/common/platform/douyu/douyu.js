@@ -14,9 +14,25 @@
 				scope : $window,
 				name : 'returnmsg'
 			},
-			giftListener : {
-				scope : $window,
+			presentListener : {
+				scope : $window.gift_obj,
 				name : 'retutn_gift'
+			},
+			pointConversion : function(count){
+				return +count/100;
+			},
+			presentDecode : function(gift){
+				var data = $window.Sttdecode(gift);
+				var user = $window.Sttdecode(DoTools.findObjectInArray(data, {name:'sui'})[0].value);
+				var uid = DoTools.findObjectInArray(user, {name:'id'})[0].value;
+				var name = DoTools.findObjectInArray(user, {name:'nick'})[0].value;
+				var quantity = DoTools.findObjectInArray(data, {name:'ms'})[0].value;
+				return {
+					uid : uid,
+					name : name,
+					quantity : quantity,
+					date : new Date()
+				};
 			},
 			sendDanmu : function(message){
 				if(message===prevMessage){
@@ -45,7 +61,8 @@
 					name : name,
 					type : type,
 					uid : uid,
-					content : content
+					content : content,
+					date : new Date()
 				};
 			},
 			user : function(){
@@ -64,7 +81,7 @@
 						rid : $ROOM.room_id,
 						oid : $ROOM.owner_uid,
 						name : $ROOM.room_name
-					}
+					};
 				}else{
 					return null;
 				}

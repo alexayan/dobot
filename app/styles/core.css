@@ -222,3 +222,13 @@
 	opacity: 0.2!important;
 	filter: alpha(opacity=20) !important;
 }
+.seekBase {
+  height: 30px;
+  width: 90%;
+  border: 1px solid #cccccc;
+}
+.seekLoad {
+	height: 30px;
+  width: 0;
+  background-color: #E0EAF1;
+}

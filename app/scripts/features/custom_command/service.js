@@ -53,7 +53,7 @@
 			var room = platform.current().room();
 			if(+cmd.auth  !== 1){
 				if(+uid !== +room.oid){
-					return false
+					return false;
 				}
 			}
 			return true;

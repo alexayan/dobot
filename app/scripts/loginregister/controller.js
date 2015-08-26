@@ -26,6 +26,6 @@
 		};
 		$scope.switchLoginRegisterView = function(view){
 			$scope.loginRegisterView = view;
-		}
+		};
 	}]);
 })(); 

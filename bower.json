@@ -9,8 +9,10 @@
     "angular-bootstrap": "latest",
     "bootstrap": "latest",
     "angular-ui-switch": "latest",
-    "angular-toasty": "latest"
+    "angular-toasty": "latest",
+    "angular-soundmanager2": "latest"
   },
   "appPath": "app",
-  "moduleName": "appApp"
+  "moduleName": "appApp",
+  "license": "MIT"
 }

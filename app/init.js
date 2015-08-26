@@ -14,6 +14,9 @@
 		'common.danmu',
 		'common.alert',
 		'common.user',
+		'common.point',
+		'common.present',
+		'common.room',
 		'templates-main',
 		'ui.bootstrap',
 		'ui.bootstrap.pagination',
@@ -21,7 +24,9 @@
 		'uiSwitch',
 		'loginregister',
 		'header',
-		'features.system_command'
+		'features.system_command',
+		'features.music',
+		'angularSoundManager'
 	]).config(['$httpProvider', function($httpProvider){
 		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 		$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';

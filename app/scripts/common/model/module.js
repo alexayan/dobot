@@ -285,6 +285,9 @@
 			models[classname] = Hehe;
 			return Hehe;
 		}
+		function get_model(name){
+			return models[name];
+		}
 		function ModelArray(){
 			Array.apply(this, arguments);
 		}
@@ -592,12 +595,15 @@
 			uid : []
 		}, null);
 
+
 		return {
 			ModelArray : ModelArray,
 			User : User,
 			CustomCommand : CustomCommand,
 			serialize : serialize,
 			deserialize : deserialize,
+			create_model : create_model,
+			get_model : get_model
 		};
 	}]);
 })(this);

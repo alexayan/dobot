@@ -56,7 +56,7 @@
 				tasks = [],
 				i = null,
 				interval = 600, //过小会引起阻塞，应该随着当前弹幕增加速率变化。当弹幕变多时，应该增加。
-				optimizationMode = 'auto';
+				optimizationMode = 'manual';
 			$rootScope.$on('UserLogout', function(){
 				tasks = [];
 			});
@@ -102,21 +102,7 @@
 				}
 			}
 			function optimization(){
-				var min = 500,
-					len = datas.length,
-					cur = 500;
-				if(len>500){
-					cur+=100;
-					$interval.cancel(i);
-					i = $interval(processor, cur);
-				}else if (len===0){
-					cur-=100;
-					if(cur<500){
-						cur = min;
-					}
-					$interval.cancel(i);
-					i = $interval(processor, cur);
-				}
+				return;
 			}
 			DoTools.inject(platform.danmuListener, injector);
 			return {

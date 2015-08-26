@@ -403,6 +403,7 @@ LazyLoad = (function (doc) {
 			  'http://127.0.0.1:8888/bower_components/ngDialog/js/ngDialog.js',
         'http://127.0.0.1:8888/bower_components/angular-toasty/dist/angular-toasty.js',
 			  'http://127.0.0.1:8888/bower_components/angular-translate/angular-translate.js',
+        'http://127.0.0.1:8888/bower_components/angular-soundmanager2/dist/angular-soundmanager2.js',
 			  'http://127.0.0.1:8888/dist/js/templates.js',
 			  'http://127.0.0.1:8888/dist/js/module.js',
 			  'http://127.0.0.1:8888/dist/js/init.js'],

@@ -1,3 +1,56 @@
 <div id="do-music">
-	muisc
+	<div class="container" ng-controller="MusicPanelController">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- init soundManager2 player -->
+
+                <p>
+                    当前播放: {{ currentPlaying.name }}  ({{ currentPostion }} / {{ currentDuration }})
+                </p>
+
+                <div class="seekBase" seek-track>
+                    <div class="seekLoad" ng-style="{width : ( progress + '%' ) }"></div>
+                </div>
+                <br />
+                <button play-music>播放</button>
+                -
+                <button pause-music>暂停</button>
+                -
+                <button stop-music>停止</button>
+                -
+                <button repeat-music>循环 ({{ repeat }})</button>
+                -
+<!--                 <button play-pause-toggle data-play="Play!" data-pause="Pause!">Play Toggle</button>
+
+                Is Playing: {{ isPlaying }}
+                <br/>
+ -->                <br/>音量: {{ volume }} -
+                <button music-volume data-type="increase">+</button>
+                -
+                <button music-volume data-type="decrease">-</button>
+                -
+                <button mute-music>静音 ({{ mute }})</button>
+                <br/>
+                <br/>
+                <button prev-track>前一首</button>
+                -
+                <button next-track>后一首</button>
+                -
+                <button clear-playlist>清空播放列表</button>
+                <br/>
+                <br/>
+                <h5>播放列表</h5>
+                <ul>
+                    <li ng-repeat="song in playlist">
+                        <a play-from-playlist="song">{{ song.name }}</a>
+                        -
+                        <a remove-from-playlist="song" data-index="{{$index}}">
+                            <small>(删除)</small>
+                        </a>
+                        <span ng-if="currentPlaying.id == song.id"> - (播放中)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>

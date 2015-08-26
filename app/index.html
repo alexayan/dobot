@@ -22,6 +22,9 @@
 			<div ng-switch-when="spam_protect">
 				<div ng-include="'../app/scripts/features/spam_protect/templates/main.tpl.html'"></div>
 			</div>
+			<div ng-switch-when="system_command">
+				<div ng-include="'../app/scripts/features/system_command/templates/main.tpl.html'"></div>
+			</div>
 		</div>
 	</div>
 	<!-- 登陆注册视图 -->
@@ -40,6 +43,7 @@
 		<h3>loading...</h3>
 	</div>
 	<toasty></toasty>
+	<sound-manager></sound-manager>
 	<!-- bower:js -->
 	<script src="../bower_components/angular/angular.js"></script>
 	<script src="../bower_components/angular-cookies/angular-cookies.js"></script>

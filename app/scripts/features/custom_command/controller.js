@@ -27,7 +27,7 @@
 						statusDescript = '禁用';
 					}
 					if((+value.auth)===1){
-						authDescript = '所有人'
+						authDescript = '所有人';
 					}else{
 						authDescript = '主播';
 					}
@@ -187,5 +187,5 @@
 		$scope.cancel = function(){
 			$modalInstance.dismiss();
 		};
-	}])
+	}]);
 })();
