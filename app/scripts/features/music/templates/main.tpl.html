@@ -1,56 +1,42 @@
-<div id="do-music">
-	<div class="container" ng-controller="MusicPanelController">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- init soundManager2 player -->
-
-                <p>
-                    当前播放: {{ currentPlaying.name }}  ({{ currentPostion }} / {{ currentDuration }})
-                </p>
-
-                <div class="seekBase" seek-track>
-                    <div class="seekLoad" ng-style="{width : ( progress + '%' ) }"></div>
-                </div>
-                <br />
-                <button play-music>播放</button>
-                -
-                <button pause-music>暂停</button>
-                -
-                <button stop-music>停止</button>
-                -
-                <button repeat-music>循环 ({{ repeat }})</button>
-                -
-<!--                 <button play-pause-toggle data-play="Play!" data-pause="Pause!">Play Toggle</button>
-
-                Is Playing: {{ isPlaying }}
-                <br/>
- -->                <br/>音量: {{ volume }} -
-                <button music-volume data-type="increase">+</button>
-                -
-                <button music-volume data-type="decrease">-</button>
-                -
-                <button mute-music>静音 ({{ mute }})</button>
-                <br/>
-                <br/>
-                <button prev-track>前一首</button>
-                -
-                <button next-track>后一首</button>
-                -
-                <button clear-playlist>清空播放列表</button>
-                <br/>
-                <br/>
-                <h5>播放列表</h5>
-                <ul>
-                    <li ng-repeat="song in playlist">
-                        <a play-from-playlist="song">{{ song.name }}</a>
-                        -
-                        <a remove-from-playlist="song" data-index="{{$index}}">
-                            <small>(删除)</small>
-                        </a>
-                        <span ng-if="currentPlaying.id == song.id"> - (播放中)</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
+<div id="do-music" ng-controller="MusicPanelController">
+    
+    <div class="panel panel-default">
+        <div class="panel-heading">播放列表</div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <td>#</td>
+                    <td>音乐标题</td>
+                    <td>歌手</td>
+                    <td>时长</td>
+                    <td>点歌人</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="song in playlist">
+                    <td ng-if="currentPlaying.id != song.id">{{$index+1}}</td>
+                    <td ng-if="currentPlaying.id == song.id"><i class="fa fa-music"></i></td>
+                    <td>{{song.name}}</td>
+                    <td>{{song.artists[0].name}}</td>
+                    <td>{{song.duration|humanTime}}</td>
+                    <td>{{song.assign}}</td>
+                    <td><i class="fa fa-eject" remove-from-playlist="song" data-index="{{$index}}"></i></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+
+    <nav class="navbar navbar-default">
+        <button type="button" class="btn btn-default navbar-btn" prev-track><i class="fa fa-step-backward"></i></button>
+        <button ng-show="!isPlaying" type="button" class="btn btn-default navbar-btn" play-music><i class="fa fa-play"></i></button>
+        <button ng-show="isPlaying" type="button" class="btn btn-default navbar-btn" pause-music><i class="fa fa-pause"></i></button>
+        <button type="button" class="btn btn-default navbar-btn" next-track><i class="fa fa-step-forward"></i></i></button>
+        <div class="seekBase" seek-track>
+            <div class="seekLoad" ng-style="{width : ( progress + '%' ) }"></div>
+            <span class="seekBg"></span>
+            <i class="fa fa-bullseye" ng-style="{left : ( progress + '%' ) }"></i>
+        </div>
+        <span>{{ currentPostion||'00:00' }} / {{ currentDuration||'00:00' }}</span>
+    </nav>
 </div>

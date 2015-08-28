@@ -25,7 +25,7 @@
 	  		</tr>
 	  	</tbody>
 	</table>
-	<div class="nav" ng-show="pageCommands.length>0">
+	<div class="nav" ng-show="pageCommands.length>pagination.pageNumbers">
 		<div pagination total-items="tempCommands.length" items-per-page="pagination.pageNumbers" ng-model="pagination.currentPage" num-pages="pagination.totalPages" first-text="首页" last-text="尾页" previous-text="上一页" next-text="下一页" rotate="true" ng-change="pagination.pageChanged()"></div>
 	</div>
 </div>

@@ -10,7 +10,8 @@
     "bootstrap": "latest",
     "angular-ui-switch": "latest",
     "angular-toasty": "latest",
-    "angular-soundmanager2": "latest"
+    "angular-soundmanager2": "latest",
+    "font-awesome": "latest"
   },
   "appPath": "app",
   "moduleName": "appApp",

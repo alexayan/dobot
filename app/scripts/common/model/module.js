@@ -444,7 +444,7 @@
 	// UserApi
 		var User = create_model('User',{
 			login : function(data, success, error){
-				$http.post(API_HOST+'/login', data).success(function(data){
+				$http.post(API_HOST+'/login', data, {'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(new User(data.result));
 					}else if(data.status === 'error'){
@@ -455,7 +455,7 @@
 				});
 			},
 			register : function(data, success, error){
-				$http.post(API_HOST+'/register', data).success(function(data){
+				$http.post(API_HOST+'/register', data,{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(new User(data.result));
 					}else if(data.status === 'error'){
@@ -466,7 +466,7 @@
 				});
 			},
 			current : function(success, error){
-				$http.get(API_HOST+'/currentuser').success(function(data){
+				$http.get(API_HOST+'/currentuser',{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(new User(data.result));
 					}else if(data.status === 'error'){
@@ -479,7 +479,7 @@
 		},{
 			logout : function(success, error){
 				var that = this;
-				$http.get(API_HOST+'/logout').success(function(data){
+				$http.get(API_HOST+'/logout',{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(that);
 					}else if(data.status === 'error'){
@@ -505,7 +505,7 @@
 
 		var CustomCommand = create_model('CustomCommand', {
 			list : function(success, error){
-				$http.get(API_HOST+'/customcommand').success(function(data){
+				$http.get(API_HOST+'/customcommand',{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						var res = new ModelArray();
 						for(var i=0,len=data.result.length;i<len;i++){
@@ -520,7 +520,7 @@
 				});
 			},
 			create : function(data, success, error){
-				$http.post(API_HOST+'/customcommand', data).success(function(data){
+				$http.post(API_HOST+'/customcommand', data,{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(new CustomCommand(data.result));
 					}else if(data.status === 'error'){
@@ -543,7 +543,7 @@
 						return;
 					}
 					data = this.get_dirty();
-					$http.put(API_HOST+'/customcommand/'+this.id, data).success(function(data){
+					$http.put(API_HOST+'/customcommand/'+this.id, data,{'withCredentials':true}).success(function(data){
 						if(data.status === 'success'){
 							set_temp_if_save_success(that);
 							success && success(that);
@@ -555,7 +555,7 @@
 					});
 				}else{
 					data = this.toJSON(true);
-					$http.post(API_HOST+'/customcommand', data).success(function(data){
+					$http.post(API_HOST+'/customcommand', data,{'withCredentials':true}).success(function(data){
 						if(data.status === 'success'){
 							set_temp_if_save_success(that);
 							that.id = data.result.id;
@@ -570,7 +570,7 @@
 			},
 			delete : function(success, error){
 				var that = this;
-				$http.delete(API_HOST+'/customcommand/'+this.id).success(function(data){
+				$http.delete(API_HOST+'/customcommand/'+this.id,{'withCredentials':true}).success(function(data){
 					if(data.status === 'success'){
 						success && success(that);
 					}else if(data.status === 'error'){

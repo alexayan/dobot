@@ -27,6 +27,9 @@
 				desc = cmd.description||'没有描述';
 				return res + cmd.name + '('+desc+')。';
 			}else{
+				if(!data.message||/^\s*$/.test(data.message)){
+					return res + '请指定需要查看描述的指令，如!help !music'
+				}
 				return res+'没有'+data.message+'指令';
 			}
 		});

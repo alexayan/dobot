@@ -43,6 +43,28 @@ module.exports = function (grunt) {
             core : {
                 src : ['app/core.js'],
                 dest : 'dist/js/core.js'
+            },
+            buildjs : {
+                src : ['bower_components/angular/angular.js',
+                       'bower_components/angular-cookies/angular-cookies.js',
+                       'bower_components/angular-bootstrap/ui-bootstrap.js',
+                       'bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+                       'bower_components/angular-ui-switch/angular-ui-switch.js',
+                       'bower_components/ngDialog/js/ngDialog.js',
+                       'bower_components/angular-toasty/dist/angular-toasty.js',
+                       'bower_components/angular-translate/angular-translate.js',
+                       'bower_components/angular-translate/angular-translate.js',
+                       'bower_components/angular-soundmanager2/dist/angular-soundmanager2.js',
+                       'dist/js/templates.js',
+                       'dist/js/module.js',
+                       'dist/js/init.js'],
+                dest : 'build/all.js'
+            },
+            buildcss : {
+                src : ['dist/all.css',
+                       'bower_components/bootstrap/dist/css/bootstrap.css',
+                       'bower_components/angular-toasty/dist/angular-toasty.css'],
+                dest : 'build/all.css'
             }
         },
         cssmin: {
@@ -50,18 +72,18 @@ module.exports = function (grunt) {
                 keepSpecialComments: 0 
             },
             compress: {
-                files: {
-                  'dist/styles/all.min.css': ['app/styles/all.css']
-                }
+                 files: [{
+                    expand: true,
+                    src: ['build/all.css'],
+                    ext: '.min.css'
+                }]
             }
         },
         uglify: {
             minjs: { 
                 files: [{
                     expand: true,
-                    cwd: 'app/',
-                    src: ['**/*.js', '!**/*.min.js'],
-                    dest: 'dist/',
+                    src: ['build/all.js'],
                     ext: '.min.js'
                 }]
             }
@@ -140,5 +162,5 @@ module.exports = function (grunt) {
           'watch'
         ]);
       });
-    grunt.registerTask('build',['concat', 'cssmin', 'uglify','imagemin']);
+    grunt.registerTask('build', ['concat:buildcss','cssmin','concat:buildjs','uglify']);
 };

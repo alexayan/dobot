@@ -28,6 +28,8 @@
 		'features.music',
 		'angularSoundManager'
 	]).config(['$httpProvider', function($httpProvider){
+		$httpProvider.defaults.withCredentials = true;
+		$httpProvider.defaults.headers.common['withCredential'] = 'true';
 		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 		$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
 		var param = function(obj) {
