@@ -1,0 +1,48 @@
+<div id="dobot">
+	<!-- 控制面板 -->
+	<div id="do-control-panel" ng-if="user&&app.isLoading==false" class="row">
+		<div ng-include="'../app/scripts/header/header.tpl.html'" id="do-header" class="col-md-12" ng-controller="DoHeaderController"></div>
+		<div ng-include="'../app/scripts/sidebar/sidebar.tpl.html'" id="do-sidebar" class="col-md-3"></div>
+		<div ng-switch="app.curView" id="do-body" class="col-md-9">
+			<div ng-switch-when="dashboard">
+				<div ng-include="'../app/scripts/features/dashboard/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="timer">
+				<div ng-include="'../app/scripts/features/timer/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="custom_command">
+				<div ng-include="'../app/scripts/features/custom_command/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="message">
+				<div ng-include="'../app/scripts/features/message/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="music">
+				<div ng-include="'../app/scripts/features/music/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="spam_protect">
+				<div ng-include="'../app/scripts/features/spam_protect/templates/main.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="system_command">
+				<div ng-include="'../app/scripts/features/system_command/templates/main.tpl.html'"></div>
+			</div>
+		</div>
+	</div>
+	<!-- 登陆注册视图 -->
+	<div id="do-login-and-register" ng-if="!user&&app.isLoading==false" ng-controller="LoginRegisterController">
+		<div ng-switch="loginRegisterView">
+			<div ng-switch-when="login">
+				<div ng-include="'../app/scripts/loginregister/templates/login.tpl.html'"></div>
+			</div>
+			<div ng-switch-when="register">
+				<div ng-include="'../app/scripts/loginregister/templates/register.tpl.html'"></div>
+			</div>
+		</div>
+	</div>
+	<!-- loading视图 -->
+	<div class="do-loading-common" ng-if="app.isLoading==true">
+		<h3>loading...</h3>
+	</div>
+	<toasty></toasty>
+	<sound-manager></sound-manager>
+	<!-- bower:js -->
+</div>

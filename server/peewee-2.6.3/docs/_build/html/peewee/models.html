@@ -1,0 +1,854 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Models and Fields &mdash; peewee 2.6.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="peewee 2.6.1 documentation" href="../index.html" />
+    <link rel="next" title="Querying" href="querying.html" />
+    <link rel="prev" title="Managing your Database" href="database.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="database.html" title="Managing your Database"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 2.6.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="models-and-fields">
+<span id="models"></span><h1>Models and Fields<a class="headerlink" href="#models-and-fields" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="api.html#Model" title="Model"><code class="xref py py-class docutils literal"><span class="pre">Model</span></code></a> classes, <code class="xref py py-class docutils literal"><span class="pre">Field</span></code> instances and model instances all map to database concepts:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Thing</th>
+<th class="head">Corresponds to...</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Model class</td>
+<td>Database table</td>
+</tr>
+<tr class="row-odd"><td>Field instance</td>
+<td>Column on a table</td>
+</tr>
+<tr class="row-even"><td>Model instance</td>
+<td>Row in a database table</td>
+</tr>
+</tbody>
+</table>
+<p>The following code shows the typical way you will define your database connection and model classes.</p>
+<div class="highlight-python" id="blog-models"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;my_app.db&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Tweet</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;tweets&#39;</span><span class="p">)</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">created_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">is_published</span> <span class="o">=</span> <span class="n">BooleanField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic">
+<li><p class="first">Create an instance of a <a class="reference internal" href="api.html#Database" title="Database"><code class="xref py py-class docutils literal"><span class="pre">Database</span></code></a>.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;my_app.db&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">db</span></code> object will be used to manage the connections to the Sqlite database. In this example we&#8217;re using <a class="reference internal" href="api.html#SqliteDatabase" title="SqliteDatabase"><code class="xref py py-class docutils literal"><span class="pre">SqliteDatabase</span></code></a>, but you could also use one of the other <a class="reference internal" href="database.html#databases"><span>database engines</span></a>.</p>
+</div></blockquote>
+</li>
+<li><p class="first">Create a base model class which specifies our database.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span>
+</pre></div>
+</div>
+<p>It is good practice to define a base model class which establishes the database connection. This makes your code DRY as you will not have to specify the database for subsequent models.</p>
+<p>Model configuration is kept namespaced in a special class called <code class="docutils literal"><span class="pre">Meta</span></code>. This convention is borrowed from Django. <a class="reference internal" href="#model-options"><span>Meta</span></a> configuration is passed on to subclasses, so our project&#8217;s models will all subclass <em>BaseModel</em>. There are <a class="reference internal" href="#model-options"><span>many different attributes</span></a> you can configure using <em>Model.Meta</em>.</p>
+</div></blockquote>
+</li>
+<li><p class="first">Define a model class.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Model definition uses the declarative style seen in other popular ORMs like SQLAlchemy or Django. Note that we are extending the <em>BaseModel</em> class so the <em>User</em> model will inherit the database connection.</p>
+<p>We have explicitly defined a single <em>username</em> column with a unique constraint. Because we have not specified a primary key, peewee will automatically add an auto-incrementing integer primary key field named <em>id</em>.</p>
+</div></blockquote>
+</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you would like to start using peewee with an existing database, you can use <a class="reference internal" href="playhouse.html#pwiz"><span>pwiz, a model generator</span></a> to automatically generate model definitions.</p>
+</div>
+<div class="section" id="fields">
+<span id="id1"></span><h2>Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="xref py py-class docutils literal"><span class="pre">Field</span></code> class is used to describe the mapping of <a class="reference internal" href="api.html#Model" title="Model"><code class="xref py py-class docutils literal"><span class="pre">Model</span></code></a> attributes to database columns. Each field type has a corresponding SQL storage class (i.e. varchar, int), and conversion between python data types and underlying storage is handled transparently.</p>
+<p>When creating a <a class="reference internal" href="api.html#Model" title="Model"><code class="xref py py-class docutils literal"><span class="pre">Model</span></code></a> class, fields are defined as class attributes. This should look familiar to users of the django framework. Here&#8217;s an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">join_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">about_me</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>There is one special type of field, <a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal"><span class="pre">ForeignKeyField</span></code></a>, which allows you
+to represent foreign-key relationships between models in an intuitive way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;messages&#39;</span><span class="p">)</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">send_date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This allows you to write code like the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">some_message</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span>
+<span class="go">Some User</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">some_user</span><span class="o">.</span><span class="n">messages</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span> <span class="n">message</span><span class="o">.</span><span class="n">body</span>
+<span class="go">some message</span>
+<span class="go">another message</span>
+<span class="go">yet another message</span>
+</pre></div>
+</div>
+<p>For full documentation on fields, see the <a class="reference internal" href="api.html#fields-api"><span>Fields API notes</span></a></p>
+<div class="section" id="field-types-table">
+<span id="id2"></span><h3>Field types table<a class="headerlink" href="#field-types-table" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="24%" />
+<col width="24%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field Type</th>
+<th class="head">Sqlite</th>
+<th class="head">Postgresql</th>
+<th class="head">MySQL</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">CharField</span></code></td>
+<td>varchar</td>
+<td>varchar</td>
+<td>varchar</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">TextField</span></code></td>
+<td>text</td>
+<td>text</td>
+<td>longtext</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">DateTimeField</span></code></td>
+<td>datetime</td>
+<td>timestamp</td>
+<td>datetime</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">IntegerField</span></code></td>
+<td>integer</td>
+<td>integer</td>
+<td>integer</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">BooleanField</span></code></td>
+<td>smallint</td>
+<td>boolean</td>
+<td>bool</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">FloatField</span></code></td>
+<td>real</td>
+<td>real</td>
+<td>real</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">DoubleField</span></code></td>
+<td>real</td>
+<td>double precision</td>
+<td>double precision</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">BigIntegerField</span></code></td>
+<td>integer</td>
+<td>bigint</td>
+<td>bigint</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">DecimalField</span></code></td>
+<td>decimal</td>
+<td>numeric</td>
+<td>numeric</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">PrimaryKeyField</span></code></td>
+<td>integer</td>
+<td>serial</td>
+<td>integer</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">ForeignKeyField</span></code></td>
+<td>integer</td>
+<td>integer</td>
+<td>integer</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">DateField</span></code></td>
+<td>date</td>
+<td>date</td>
+<td>date</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">TimeField</span></code></td>
+<td>time</td>
+<td>time</td>
+<td>time</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">BlobField</span></code></td>
+<td>blob</td>
+<td>bytea</td>
+<td>blob</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">UUIDField</span></code></td>
+<td>not supported</td>
+<td>uuid</td>
+<td>not supported</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="field-initialization-arguments">
+<h3>Field initialization arguments<a class="headerlink" href="#field-initialization-arguments" title="Permalink to this headline">¶</a></h3>
+<p>Parameters accepted by all field types and their default values:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">null</span> <span class="pre">=</span> <span class="pre">False</span></code> &#8211; boolean indicating whether null values are allowed to be stored</li>
+<li><code class="docutils literal"><span class="pre">index</span> <span class="pre">=</span> <span class="pre">False</span></code> &#8211; boolean indicating whether to create an index on this column</li>
+<li><code class="docutils literal"><span class="pre">unique</span> <span class="pre">=</span> <span class="pre">False</span></code> &#8211; boolean indicating whether to create a unique index on this column. See also <a class="reference internal" href="#model-indexes"><span>adding composite indexes</span></a>.</li>
+<li><code class="docutils literal"><span class="pre">verbose_name</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; string representing the &#8220;user-friendly&#8221; name of this field</li>
+<li><code class="docutils literal"><span class="pre">help_text</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; string representing any helpful text for this field</li>
+<li><code class="docutils literal"><span class="pre">db_column</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; string representing the underlying column to use if different, useful for legacy databases</li>
+<li><code class="docutils literal"><span class="pre">default</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; any value to use as a default for uninitialized models</li>
+<li><code class="docutils literal"><span class="pre">choices</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; an optional iterable containing 2-tuples of <code class="docutils literal"><span class="pre">value</span></code>, <code class="docutils literal"><span class="pre">display</span></code></li>
+<li><code class="docutils literal"><span class="pre">primary_key</span> <span class="pre">=</span> <span class="pre">False</span></code> &#8211; whether this field is the primary key for the table</li>
+<li><code class="docutils literal"><span class="pre">sequence</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; sequence to populate field (if backend supports it)</li>
+<li><code class="docutils literal"><span class="pre">constraints</span> <span class="pre">=</span> <span class="pre">None</span></code> - a list of one or more constraints, e.g. <code class="docutils literal"><span class="pre">[Check('price</span> <span class="pre">&gt;</span> <span class="pre">0')]</span></code></li>
+<li><code class="docutils literal"><span class="pre">schema</span> <span class="pre">=</span> <span class="pre">None</span></code> &#8211; optional name of the schema to use, if your db supports this.</li>
+</ul>
+</div>
+<div class="section" id="some-fields-take-special-parameters">
+<h3>Some fields take special parameters...<a class="headerlink" href="#some-fields-take-special-parameters" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field type</th>
+<th class="head">Special Parameters</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="api.html#CharField" title="CharField"><code class="xref py py-class docutils literal"><span class="pre">CharField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">max_length</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api.html#DateTimeField" title="DateTimeField"><code class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">formats</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api.html#DateField" title="DateField"><code class="xref py py-class docutils literal"><span class="pre">DateField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">formats</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api.html#TimeField" title="TimeField"><code class="xref py py-class docutils literal"><span class="pre">TimeField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">formats</span></code></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="api.html#DecimalField" title="DecimalField"><code class="xref py py-class docutils literal"><span class="pre">DecimalField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">max_digits</span></code>, <code class="docutils literal"><span class="pre">decimal_places</span></code>,
+<code class="docutils literal"><span class="pre">auto_round</span></code>, <code class="docutils literal"><span class="pre">rounding</span></code></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal"><span class="pre">ForeignKeyField</span></code></a></td>
+<td><code class="docutils literal"><span class="pre">rel_model</span></code>, <code class="docutils literal"><span class="pre">related_name</span></code>, <code class="docutils literal"><span class="pre">to_field</span></code>,
+<code class="docutils literal"><span class="pre">on_delete</span></code>, <code class="docutils literal"><span class="pre">on_update</span></code>, <code class="docutils literal"><span class="pre">extra</span></code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Both <code class="docutils literal"><span class="pre">default</span></code> and <code class="docutils literal"><span class="pre">choices</span></code> could be implemented at the database level as <em>DEFAULT</em> and <em>CHECK CONSTRAINT</em> respectively, but any application change would require a schema change. Because of this, <code class="docutils literal"><span class="pre">default</span></code> is implemented purely in python and <code class="docutils literal"><span class="pre">choices</span></code> are not validated but exist for metadata purposes only.</p>
+<p class="last">To add database (server-side) constraints, use the <code class="docutils literal"><span class="pre">constraints</span></code> parameter.</p>
+</div>
+</div>
+<div class="section" id="foreignkeyfield">
+<h3>ForeignKeyField<a class="headerlink" href="#foreignkeyfield" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal"><span class="pre">ForeignKeyField</span></code></a> is a special field type that allows one model to reference another. Typically a foreign key will contain the primary key of the model it relates to (but you can specify a particular column by specifying a <code class="docutils literal"><span class="pre">to_field</span></code>).</p>
+<p>Foreign keys allow data to be <a class="reference external" href="http://en.wikipedia.org/wiki/Database_normalization">normalized</a>. In our example models, there is a foreign key from <code class="docutils literal"><span class="pre">Tweet</span></code> to <code class="docutils literal"><span class="pre">User</span></code>. This means that all the users are stored in their own table, as are the tweets, and the foreign key from tweet to user allows each tweet to <em>point</em> to a particular user object.</p>
+<p>In peewee, accessing the value of a <a class="reference internal" href="api.html#ForeignKeyField" title="ForeignKeyField"><code class="xref py py-class docutils literal"><span class="pre">ForeignKeyField</span></code></a> will return the entire related object, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tweets</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">User</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">create_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the example above the <code class="docutils literal"><span class="pre">User</span></code> data was selected as part of the query. For more examples of this technique, see the <a class="reference internal" href="querying.html#nplusone"><span>Avoiding N+1</span></a> document.</p>
+<p>If we did not select the <code class="docutils literal"><span class="pre">User</span></code>, though, then an additional query would be issued to fetch the associated <code class="docutils literal"><span class="pre">User</span></code> data:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tweets</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Tweet</span><span class="o">.</span><span class="n">create_date</span><span class="o">.</span><span class="n">desc</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+    <span class="c"># WARNING: an additional query will be issued for EACH tweet</span>
+    <span class="c"># to fetch the associated User data.</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sometimes you only need the associated primary key value from the foreign key column. In this case, Peewee follows the convention established by Django, of allowing you to access the raw foreign key value by appending <code class="docutils literal"><span class="pre">&quot;_id&quot;</span></code> to the foreign key field&#8217;s name:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">tweets</span> <span class="o">=</span> <span class="n">Tweet</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">tweet</span> <span class="ow">in</span> <span class="n">tweets</span><span class="p">:</span>
+    <span class="c"># Instead of &quot;tweet.user&quot;, we will just get the raw ID value stored</span>
+    <span class="c"># in the column.</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">tweet</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="n">tweet</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="datetimefield-datefield-and-timefield">
+<h3>DateTimeField, DateField and TimeField<a class="headerlink" href="#datetimefield-datefield-and-timefield" title="Permalink to this headline">¶</a></h3>
+<p>The three fields devoted to working with dates and times have special properties
+which allow access to things like the year, month, hour, etc.</p>
+<p><a class="reference internal" href="api.html#DateField" title="DateField"><code class="xref py py-class docutils literal"><span class="pre">DateField</span></code></a> has properties for:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">year</span></code></li>
+<li><code class="docutils literal"><span class="pre">month</span></code></li>
+<li><code class="docutils literal"><span class="pre">day</span></code></li>
+</ul>
+<p><a class="reference internal" href="api.html#TimeField" title="TimeField"><code class="xref py py-class docutils literal"><span class="pre">TimeField</span></code></a> has properties for:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">hour</span></code></li>
+<li><code class="docutils literal"><span class="pre">minute</span></code></li>
+<li><code class="docutils literal"><span class="pre">second</span></code></li>
+</ul>
+<p><a class="reference internal" href="api.html#DateTimeField" title="DateTimeField"><code class="xref py py-class docutils literal"><span class="pre">DateTimeField</span></code></a> has all of the above.</p>
+<p>These properties can be used just like any other expression. Let&#8217;s say we have
+an events calendar and want to highlight all the days in the current month that
+have an event attached:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Get the current time.</span>
+<span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="c"># Get days that have events for the current month.</span>
+<span class="n">Event</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">event_date</span><span class="o">.</span><span class="n">day</span><span class="o">.</span><span class="n">alias</span><span class="p">(</span><span class="s">&#39;day&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">event_date</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="n">now</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">Event</span><span class="o">.</span><span class="n">event_date</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">now</span><span class="o">.</span><span class="n">month</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">SQLite does not have a native date type, so dates are stored in formatted text columns. To ensure that comparisons work correctly, the dates need to be formatted so they are sorted lexicographically. That is why they are stored, by default, as <code class="docutils literal"><span class="pre">YYYY-MM-DD</span> <span class="pre">HH:MM:SS</span></code>.</p>
+</div>
+</div>
+<div class="section" id="creating-a-custom-field">
+<h3>Creating a custom field<a class="headerlink" href="#creating-a-custom-field" title="Permalink to this headline">¶</a></h3>
+<p>It isn&#8217;t too difficult to add support for custom field types in peewee. In this example we will create a UUID field for postgresql (which has a native UUID column type).</p>
+<p>To add a custom field type you need to first identify what type of column the field data will be stored in. If you just want to add python behavior atop, say, a decimal field (for instance to make a currency field) you would just subclass <a class="reference internal" href="api.html#DecimalField" title="DecimalField"><code class="xref py py-class docutils literal"><span class="pre">DecimalField</span></code></a>. On the other hand, if the database offers a custom column type you will need to let peewee know. This is controlled by the <code class="xref py py-attr docutils literal"><span class="pre">Field.db_field</span></code> attribute.</p>
+<p>Let&#8217;s start by defining our UUID field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">UUIDField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
+    <span class="n">db_field</span> <span class="o">=</span> <span class="s">&#39;uuid&#39;</span>
+</pre></div>
+</div>
+<p>We will store the UUIDs in a native UUID column. Since psycopg2 treats the data as a string by default, we will add two methods to the field to handle:</p>
+<ul class="simple">
+<li>The data coming out of the database to be used in our application</li>
+<li>The data from our python app going into the database</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="k">class</span> <span class="nc">UUIDField</span><span class="p">(</span><span class="n">Field</span><span class="p">):</span>
+    <span class="n">db_field</span> <span class="o">=</span> <span class="s">&#39;uuid&#39;</span>
+
+    <span class="k">def</span> <span class="nf">db_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c"># convert UUID to str</span>
+
+    <span class="k">def</span> <span class="nf">python_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c"># convert str to UUID</span>
+</pre></div>
+</div>
+<p>Now, we need to let the database know how to map this <em>uuid</em> label to an actual <em>uuid</em> column type in the database. There are 2 ways of doing this:</p>
+<ol class="arabic simple">
+<li>Specify the overrides in the <a class="reference internal" href="api.html#Database" title="Database"><code class="xref py py-class docutils literal"><span class="pre">Database</span></code></a> constructor:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">PostgresqlDatabase</span><span class="p">(</span><span class="s">&#39;my_db&#39;</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;uuid&#39;</span><span class="p">:</span> <span class="s">&#39;uuid&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li>Register them class-wide using <a class="reference internal" href="api.html#Database.register_fields" title="Database.register_fields"><code class="xref py py-meth docutils literal"><span class="pre">Database.register_fields()</span></code></a>:</li>
+</ol>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span class="c"># Will affect all instances of PostgresqlDatabase</span>
+<span class="n">PostgresqlDatabase</span><span class="o">.</span><span class="n">register_fields</span><span class="p">({</span><span class="s">&#39;uuid&#39;</span><span class="p">:</span> <span class="s">&#39;uuid&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>That is it! Some fields may support exotic operations, like the postgresql HStore field acts like a key/value store and has custom operators for things like <em>contains</em> and <em>update</em>. You can specify <a class="reference internal" href="querying.html#custom-operators"><span>custom operations</span></a> as well. For example code, check out the source code for the <a class="reference internal" href="playhouse.html#HStoreField" title="HStoreField"><code class="xref py py-class docutils literal"><span class="pre">HStoreField</span></code></a>, in <code class="docutils literal"><span class="pre">playhouse.postgres_ext</span></code>.</p>
+</div>
+</div>
+<div class="section" id="creating-model-tables">
+<h2>Creating model tables<a class="headerlink" href="#creating-model-tables" title="Permalink to this headline">¶</a></h2>
+<p>In order to start using our models, its necessary to open a connection to the database and create the tables first. Peewee will run the necessary <em>CREATE TABLE</em> queries, additionally creating any constraints and indexes.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Connect to our database.</span>
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<span class="c"># Create the tables.</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">User</span><span class="p">,</span> <span class="n">Tweet</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Strictly speaking, it is not necessary to call <a class="reference internal" href="api.html#Database.connect" title="Database.connect"><code class="xref py py-meth docutils literal"><span class="pre">connect()</span></code></a> but it is good practice to be explicit. That way if something goes wrong, the error occurs at the connect step, rather than some arbitrary time later.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Peewee can determine if your tables already exist, and conditionally create them:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="c"># Only create the tables if they do not exist.</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">User</span><span class="p">,</span> <span class="n">Tweet</span><span class="p">],</span> <span class="n">safe</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>After you have created your tables, if you choose to modify your database schema (by adding, removing or otherwise changing the columns) you will need to either:</p>
+<ul class="simple">
+<li>Drop the table and re-create it.</li>
+<li>Run one or more <em>ALTER TABLE</em> queries. Peewee comes with a schema migration tool which can greatly simplify this. Check the <a class="reference internal" href="playhouse.html#migrate"><span>schema migrations</span></a> docs for details.</li>
+</ul>
+</div>
+<div class="section" id="model-options-and-table-metadata">
+<span id="model-options"></span><h2>Model options and table metadata<a class="headerlink" href="#model-options-and-table-metadata" title="Permalink to this headline">¶</a></h2>
+<p>In order not to pollute the model namespace, model-specific configuration is placed in a special class called <em>Meta</em> (a convention borrowed from the django framework):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">contacts_db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;contacts.db&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">contacts_db</span>
+</pre></div>
+</div>
+<p>This instructs peewee that whenever a query is executed on <em>Person</em> to use the contacts database.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Take a look at <a class="reference internal" href="#blog-models"><span>the sample models</span></a> - you will notice that we created a <code class="docutils literal"><span class="pre">BaseModel</span></code> that defined the database, and then extended. This is the preferred way to define a database and create models.</p>
+</div>
+<p>Once the class is defined, you should not access <code class="docutils literal"><span class="pre">ModelClass.Meta</span></code>, but instead use <code class="docutils literal"><span class="pre">ModelClass._meta</span></code>:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">Meta</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">AttributeError</span>: <span class="n">type object &#39;Preson&#39; has no attribute &#39;Meta&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span>
+<span class="go">&lt;peewee.ModelOptions object at 0x7f51a2f03790&gt;</span>
+</pre></div>
+</div>
+<p>The <code class="xref py py-class docutils literal"><span class="pre">ModelOptions</span></code> class implements several methods which may be of use for retrieving model metadata (such as lists of fields, foreign key relationships, and more).</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">fields</span>
+<span class="go">{&#39;id&#39;: &lt;peewee.PrimaryKeyField object at 0x7f51a2e92750&gt;, &#39;name&#39;: &lt;peewee.CharField object at 0x7f51a2f0a510&gt;}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">primary_key</span>
+<span class="go">&lt;peewee.PrimaryKeyField object at 0x7f51a2e92750&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">database</span>
+<span class="go">&lt;peewee.SqliteDatabase object at 0x7f519bff6dd0&gt;</span>
+</pre></div>
+</div>
+<p>There are several options you can specify as <code class="docutils literal"><span class="pre">Meta</span></code> attributes. While most options are inheritable, some are table-specific and will not be inherited by subclasses.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="62%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Option</th>
+<th class="head">Meaning</th>
+<th class="head">Inheritable?</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">database</span></code></td>
+<td>database for model</td>
+<td>yes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">db_table</span></code></td>
+<td>name of the table to store data</td>
+<td>no</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">db_table_func</span></code></td>
+<td>function that accepts model and returns a table name</td>
+<td>yes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">indexes</span></code></td>
+<td>a list of fields to index</td>
+<td>yes</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">order_by</span></code></td>
+<td>a list of fields to use for default ordering</td>
+<td>yes</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">primary_key</span></code></td>
+<td>a <a class="reference internal" href="api.html#CompositeKey" title="CompositeKey"><code class="xref py py-class docutils literal"><span class="pre">CompositeKey</span></code></a> instance</td>
+<td>yes</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">table_alias</span></code></td>
+<td>an alias to use for the table in queries</td>
+<td>no</td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">schema</span></code></td>
+<td>the database schema for the model</td>
+<td>yes</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">validate_backrefs</span></code></td>
+<td>ensure backrefs do not conflict with other attributes.</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p>Here is an example showing inheritable versus non-inheritable attributes:</p>
+<div class="highlight-pycon"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ModelOne</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span>
+<span class="gp">... </span>        <span class="n">db_table</span> <span class="o">=</span> <span class="s">&#39;model_one_tbl&#39;</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">ModelTwo</span><span class="p">(</span><span class="n">ModelOne</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ModelOne</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">database</span> <span class="ow">is</span> <span class="n">ModelTwo</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">database</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ModelOne</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span> <span class="o">==</span> <span class="n">ModelTwo</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">db_table</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indexes-and-unique-constraints">
+<span id="model-indexes"></span><h2>Indexes and Unique Constraints<a class="headerlink" href="#indexes-and-unique-constraints" title="Permalink to this headline">¶</a></h2>
+<p>Peewee can create indexes on single or multiple columns, optionally including a <em>UNIQUE</em> constraint.</p>
+<p>Single column indexes are defined using field initialization parameters. The following example adds a unique index on the <em>username</em> field, and a normal index on the <em>email</em> field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multi-column indexes are defined as <em>Meta</em> attributes using a nested tuple. Each database index is a 2-tuple, the first part of which is a tuple of the names of the fields, the second part a boolean indicating whether the index should be unique.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Transaction</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">from_acct</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">to_acct</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">amount</span> <span class="o">=</span> <span class="n">DecimalField</span><span class="p">()</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">indexes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="c"># create a unique on from/to/date</span>
+            <span class="p">((</span><span class="s">&#39;from_acct&#39;</span><span class="p">,</span> <span class="s">&#39;to_acct&#39;</span><span class="p">,</span> <span class="s">&#39;date&#39;</span><span class="p">),</span> <span class="bp">True</span><span class="p">),</span>
+
+            <span class="c"># create a non-unique on from/to</span>
+            <span class="p">((</span><span class="s">&#39;from_acct&#39;</span><span class="p">,</span> <span class="s">&#39;to_acct&#39;</span><span class="p">),</span> <span class="bp">False</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Remember to add a <strong>trailing comma</strong> if your tuple of indexes contains only one item:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+    <span class="n">indexes</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">((</span><span class="s">&#39;first_name&#39;</span><span class="p">,</span> <span class="s">&#39;last_name&#39;</span><span class="p">),</span> <span class="bp">True</span><span class="p">),</span>  <span class="c"># Note the trailing comma!</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="non-integer-primary-keys-composite-keys-and-other-tricks">
+<span id="non-integer-primary-keys"></span><h2>Non-integer Primary Keys, Composite Keys and other Tricks<a class="headerlink" href="#non-integer-primary-keys-composite-keys-and-other-tricks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>Non-integer primary keys<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>If you would like use a non-integer primary key (which I generally don&#8217;t recommend), you can specify <code class="docutils literal"><span class="pre">primary_key=True</span></code> when creating a field. When you wish to create a new instance for a model using a non-autoincrementing primary key, you need to be sure you <a class="reference internal" href="api.html#Model.save" title="Model.save"><code class="xref py py-meth docutils literal"><span class="pre">save()</span></code></a> specifying <code class="docutils literal"><span class="pre">force_insert=True</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">UUIDModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">UUIDField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Auto-incrementing IDs are, as their name says, automatically generated for you when you insert a new row into the database. When you call <a class="reference internal" href="api.html#Model.save" title="Model.save"><code class="xref py py-meth docutils literal"><span class="pre">save()</span></code></a>, peewee determines whether to do an <em>INSERT</em> versus an <em>UPDATE</em> based on the presence of a primary key value. Since, with our uuid example, the database driver won&#8217;t generate a new ID, we need to specify it manually. When we call save() for the first time, pass in <code class="docutils literal"><span class="pre">force_insert</span> <span class="pre">=</span> <span class="pre">True</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># This works because .create() will specify `force_insert=True`.</span>
+<span class="n">obj1</span> <span class="o">=</span> <span class="n">UUIDModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+<span class="c"># This will not work, however. Peewee will attempt to do an update:</span>
+<span class="n">obj2</span> <span class="o">=</span> <span class="n">UUIDModel</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+<span class="n">obj2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span> <span class="c"># WRONG</span>
+
+<span class="n">obj2</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># CORRECT</span>
+
+<span class="c"># Once the object has been created, you can call save() normally.</span>
+<span class="n">obj2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any foreign keys to a model with a non-integer primary key will have a <code class="docutils literal"><span class="pre">ForeignKeyField</span></code> use the same underlying storage type as the primary key they are related to.</p>
+</div>
+</div>
+<div class="section" id="composite-primary-keys">
+<h3>Composite primary keys<a class="headerlink" href="#composite-primary-keys" title="Permalink to this headline">¶</a></h3>
+<p>Peewee has very basic support for composite keys.  In order to use a composite key, you must set the <code class="docutils literal"><span class="pre">primary_key</span></code> attribute of the model options to a <a class="reference internal" href="api.html#CompositeKey" title="CompositeKey"><code class="xref py py-class docutils literal"><span class="pre">CompositeKey</span></code></a> instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">BlogToTag</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A simple &quot;through&quot; table for many-to-many relationship.&quot;&quot;&quot;</span>
+    <span class="n">blog</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Blog</span><span class="p">)</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Tag</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">primary_key</span> <span class="o">=</span> <span class="n">CompositeKey</span><span class="p">(</span><span class="s">&#39;blog&#39;</span><span class="p">,</span> <span class="s">&#39;tag&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="manually-specifying-primary-keys">
+<h3>Manually specifying primary keys<a class="headerlink" href="#manually-specifying-primary-keys" title="Permalink to this headline">¶</a></h3>
+<p>Sometimes you do not want the database to automatically generate a value for the primary key, for instance when bulk loading relational data. To handle this on a <em>one-off</em> basis, you can simply tell peewee to turn off <code class="docutils literal"><span class="pre">auto_increment</span></code> during the import:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">load_user_csv</span><span class="p">()</span> <span class="c"># load up a bunch of data</span>
+
+<span class="n">User</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">auto_increment</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># turn off auto incrementing IDs</span>
+<span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">username</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">force_insert</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># &lt;-- force peewee to insert row</span>
+
+<span class="n">User</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">auto_increment</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div>
+</div>
+<p>If you <em>always</em> want to have control over the primary key, simply do not use the <a class="reference internal" href="api.html#PrimaryKeyField" title="PrimaryKeyField"><code class="xref py py-class docutils literal"><span class="pre">PrimaryKeyField</span></code></a> field type, but use a normal <a class="reference internal" href="api.html#IntegerField" title="IntegerField"><code class="xref py py-class docutils literal"><span class="pre">IntegerField</span></code></a> (or other column type):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">primary_key</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">999</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s">&#39;somebody&#39;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">u</span><span class="o">.</span><span class="n">id</span>
+<span class="mi">999</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">User</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">username</span> <span class="o">==</span> <span class="s">&#39;somebody&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">id</span>
+<span class="mi">999</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="models-without-a-primary-key">
+<h3>Models without a Primary Key<a class="headerlink" href="#models-without-a-primary-key" title="Permalink to this headline">¶</a></h3>
+<p>If you wish to create a model with no primary key, you can specify <code class="docutils literal"><span class="pre">primary_key</span> <span class="pre">=</span> <span class="pre">False</span></code> in the inner <code class="docutils literal"><span class="pre">Meta</span></code> class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyData</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">primary_key</span> <span class="o">=</span> <span class="bp">False</span>
+</pre></div>
+</div>
+<p>This will yield the following DDL:</p>
+<div class="highlight-sql"><div class="highlight"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="ss">&quot;mydata&quot;</span> <span class="p">(</span>
+  <span class="ss">&quot;timestamp&quot;</span> <span class="n">DATETIME</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="ss">&quot;value&quot;</span> <span class="nb">INTEGER</span> <span class="k">NOT</span> <span class="k">NULL</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="self-referential-foreign-keys">
+<h2>Self-referential foreign keys<a class="headerlink" href="#self-referential-foreign-keys" title="Permalink to this headline">¶</a></h2>
+<p>When creating a heirarchical structure it is necessary to create a self-referential foreign key which links a child object to its parent.  Because the model class is not defined at the time you instantiate the self-referential foreign key, use the special string <code class="docutils literal"><span class="pre">'self'</span></code> to indicate a self-referential foreign key:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Category</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">parent</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="s">&#39;self&#39;</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;children&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As you can see, the foreign key points <em>upward</em> to the parent object and the back-reference is named <em>children</em>.</p>
+<div class="admonition attention">
+<p class="first admonition-title">Attention</p>
+<p class="last">Self-referential foreign-keys should always be <code class="docutils literal"><span class="pre">null=True</span></code>.</p>
+</div>
+<p>When querying against a model that contains a self-referential foreign key you may sometimes need to perform a self-join. In those cases you can use <a class="reference internal" href="api.html#Model.alias" title="Model.alias"><code class="xref py py-meth docutils literal"><span class="pre">Model.alias()</span></code></a> to create a table reference. Here is how you might query the category and parent model using a self-join:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Parent</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">GrandParent</span> <span class="o">=</span> <span class="n">Category</span><span class="o">.</span><span class="n">alias</span><span class="p">()</span>
+<span class="n">query</span> <span class="o">=</span> <span class="p">(</span><span class="n">Category</span>
+         <span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">Category</span><span class="p">,</span> <span class="n">Parent</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Parent</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Category</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">Parent</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GrandParent</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">==</span> <span class="n">GrandParent</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+         <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GrandParent</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s">&#39;some category&#39;</span><span class="p">)</span>
+         <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Category</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="circular-foreign-key-dependencies">
+<h2>Circular foreign key dependencies<a class="headerlink" href="#circular-foreign-key-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes it happens that you will create a circular dependency between two tables.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">My personal opinion is that circular foreign keys are a code smell and should be refactored (by adding an intermediary table, for instance).</p>
+</div>
+<p>Adding circular foreign keys with peewee is a bit tricky because at the time you are defining either foreign key, the model it points to will not have been defined yet, causing a <code class="docutils literal"><span class="pre">NameError</span></code>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">favorite_tweet</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">Tweet</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># NameError!!</span>
+
+<span class="k">class</span> <span class="nc">Tweet</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;tweets&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>One option is to simply use an <a class="reference internal" href="api.html#IntegerField" title="IntegerField"><code class="xref py py-class docutils literal"><span class="pre">IntegerField</span></code></a> to store the raw ID:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="n">favorite_tweet_id</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By using <a class="reference internal" href="api.html#Proxy" title="Proxy"><code class="xref py py-class docutils literal"><span class="pre">Proxy</span></code></a> we can get around the problem and still use a foreign key field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create a proxy object to stand in for our as-yet-undefined Tweet model.</span>
+<span class="n">TweetProxy</span> <span class="o">=</span> <span class="n">Proxy</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">username</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">()</span>
+    <span class="c"># Tweet has not been defined yet so use the proxy.</span>
+    <span class="n">favorite_tweet</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">TweetProxy</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Tweet</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="n">TextField</span><span class="p">()</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">ForeignKeyField</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">&#39;tweets&#39;</span><span class="p">)</span>
+
+<span class="c"># Now that Tweet is defined, we can initialize the proxy object.</span>
+<span class="n">TweetProxy</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">Tweet</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After initializing the proxy the foreign key fields are now correctly set up. There is one more quirk to watch out for, though. When you call <a class="reference internal" href="api.html#Model.create_table" title="Model.create_table"><code class="xref py py-class docutils literal"><span class="pre">create_table</span></code></a> we will again encounter the same issue. For this reason peewee will not automatically create a foreign key constraint for any <em>deferred</em> foreign keys.</p>
+<p>Here is how to create the tables:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Foreign key constraint from User -&gt; Tweet will NOT be created because the</span>
+<span class="c"># Tweet table does not exist yet. `favorite_tweet` will just be a regular</span>
+<span class="c"># integer field:</span>
+<span class="n">User</span><span class="o">.</span><span class="n">create_table</span><span class="p">()</span>
+
+<span class="c"># Foreign key constraint from Tweet -&gt; User will be created normally.</span>
+<span class="n">Tweet</span><span class="o">.</span><span class="n">create_table</span><span class="p">()</span>
+
+<span class="c"># Now that both tables exist, we can create the foreign key from User -&gt; Tweet:</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_foreign_key</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">User</span><span class="o">.</span><span class="n">favorite_tweet</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Models and Fields</a><ul>
+<li><a class="reference internal" href="#fields">Fields</a><ul>
+<li><a class="reference internal" href="#field-types-table">Field types table</a></li>
+<li><a class="reference internal" href="#field-initialization-arguments">Field initialization arguments</a></li>
+<li><a class="reference internal" href="#some-fields-take-special-parameters">Some fields take special parameters...</a></li>
+<li><a class="reference internal" href="#foreignkeyfield">ForeignKeyField</a></li>
+<li><a class="reference internal" href="#datetimefield-datefield-and-timefield">DateTimeField, DateField and TimeField</a></li>
+<li><a class="reference internal" href="#creating-a-custom-field">Creating a custom field</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-model-tables">Creating model tables</a></li>
+<li><a class="reference internal" href="#model-options-and-table-metadata">Model options and table metadata</a></li>
+<li><a class="reference internal" href="#indexes-and-unique-constraints">Indexes and Unique Constraints</a></li>
+<li><a class="reference internal" href="#non-integer-primary-keys-composite-keys-and-other-tricks">Non-integer Primary Keys, Composite Keys and other Tricks</a><ul>
+<li><a class="reference internal" href="#id3">Non-integer primary keys</a></li>
+<li><a class="reference internal" href="#composite-primary-keys">Composite primary keys</a></li>
+<li><a class="reference internal" href="#manually-specifying-primary-keys">Manually specifying primary keys</a></li>
+<li><a class="reference internal" href="#models-without-a-primary-key">Models without a Primary Key</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#self-referential-foreign-keys">Self-referential foreign keys</a></li>
+<li><a class="reference internal" href="#circular-foreign-key-dependencies">Circular foreign key dependencies</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="database.html"
+                        title="previous chapter">Managing your Database</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="querying.html"
+                        title="next chapter">Querying</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/models.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="database.html" title="Managing your Database"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 2.6.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright charles leifer.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Transactions &mdash; peewee 2.6.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.6.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="peewee 2.6.1 documentation" href="../index.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Querying" href="querying.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 2.6.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="transactions">
+<span id="id1"></span><h1>Transactions<a class="headerlink" href="#transactions" title="Permalink to this headline">¶</a></h1>
+<p>Peewee provides several interfaces for working with transactions. The most general is the <a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">Database.atomic()</span></code></a> method, which also supports nested transactions. <a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a> blocks will be run in a transaction or savepoint, depending on the level of nesting.</p>
+<p>If an exception occurs in a wrapped block, the current transaction/savepoint will be rolled back. Otherwise the statements will be committed at the end of the wrapped block.</p>
+<p><a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a> can be used as either a <strong>context manager</strong> or a <strong>decorator</strong>.</p>
+<div class="section" id="context-manager">
+<h2>Context manager<a class="headerlink" href="#context-manager" title="Permalink to this headline">¶</a></h2>
+<p>Using <code class="docutils literal"><span class="pre">atomic</span></code> as context manager:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">atomic</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+    <span class="c"># This is the outer-most level, so this block corresponds to</span>
+    <span class="c"># a transaction.</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;charlie&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">atomic</span><span class="p">()</span> <span class="k">as</span> <span class="n">nested_txn</span><span class="p">:</span>
+        <span class="c"># This block corresponds to a savepoint.</span>
+        <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;huey&#39;</span><span class="p">)</span>
+
+        <span class="c"># This will roll back the above create() query.</span>
+        <span class="n">nested_txn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;mickey&#39;</span><span class="p">)</span>
+
+<span class="c"># When the block ends, the transaction is committed (assuming no error</span>
+<span class="c"># occurs). At that point there will be two users, &quot;charlie&quot; and &quot;mickey&quot;.</span>
+</pre></div>
+</div>
+<p>You can use the <code class="docutils literal"><span class="pre">atomic</span></code> method to perform <em>get or create</em> operations as well:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">atomic</span><span class="p">():</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&#39;Success&#39;</span>
+<span class="k">except</span> <span class="n">peewee</span><span class="o">.</span><span class="n">IntegrityError</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s">&#39;Failure: </span><span class="si">%s</span><span class="s"> is already in use.&#39;</span> <span class="o">%</span> <span class="n">username</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="decorator">
+<h2>Decorator<a class="headerlink" href="#decorator" title="Permalink to this headline">¶</a></h2>
+<p>Using <code class="docutils literal"><span class="pre">atomic</span></code> as a decorator:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@db.atomic</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="c"># This statement will run in a transaction. If the caller is already</span>
+    <span class="c"># running in an `atomic` block, then a savepoint will be used instead.</span>
+    <span class="k">return</span> <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+
+<span class="n">create_user</span><span class="p">(</span><span class="s">&#39;charlie&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="nesting-transactions">
+<h2>Nesting Transactions<a class="headerlink" href="#nesting-transactions" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a> provides transparent nesting of transactions. When using <a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a>, the outer-most call will be wrapped in a transaction, and any nested calls will use savepoints.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">atomic</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+    <span class="n">perform_operation</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">atomic</span><span class="p">()</span> <span class="k">as</span> <span class="n">nested_txn</span><span class="p">:</span>
+        <span class="n">perform_another_operation</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Peewee supports nested transactions through the use of savepoints (for more information, see <a class="reference internal" href="api.html#Database.savepoint" title="Database.savepoint"><code class="xref py py-meth docutils literal"><span class="pre">savepoint()</span></code></a>).</p>
+</div>
+<div class="section" id="explicit-transaction">
+<h2>Explicit transaction<a class="headerlink" href="#explicit-transaction" title="Permalink to this headline">¶</a></h2>
+<p>If you wish to explicitly run code in a transaction, you can use <a class="reference internal" href="api.html#Database.transaction" title="Database.transaction"><code class="xref py py-meth docutils literal"><span class="pre">transaction()</span></code></a>. Like <a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a>, <a class="reference internal" href="api.html#Database.transaction" title="Database.transaction"><code class="xref py py-meth docutils literal"><span class="pre">transaction()</span></code></a> can be used as a context manager or as a decorator.</p>
+<p>If an exception occurs in a wrapped block, the transaction will be rolled back. Otherwise the statements will be committed at the end of the wrapped block.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">():</span>
+    <span class="c"># Delete the user and their associated tweets.</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Transactions can be explicitly committed or rolled-back within the wrapped block. When this happens, a new transaction will be started.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;mickey&#39;</span><span class="p">)</span>
+    <span class="n">txn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>  <span class="c"># Changes are saved and a new transaction begins.</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;huey&#39;</span><span class="p">)</span>
+
+    <span class="c"># Roll back. &quot;huey&quot; will not be saved, but since &quot;mickey&quot; was already</span>
+    <span class="c"># committed, that row will remain in the database.</span>
+    <span class="n">txn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;whiskers&#39;</span><span class="p">)</span>
+    <span class="c"># Roll back changes, which removes &quot;whiskers&quot;.</span>
+    <span class="n">txn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+
+    <span class="c"># Create a new row for &quot;mr. whiskers&quot; which will be implicitly committed</span>
+    <span class="c"># at the end of the `with` block.</span>
+    <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;mr. whiskers&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you attempt to nest transactions with peewee using the <a class="reference internal" href="api.html#Database.transaction" title="Database.transaction"><code class="xref py py-meth docutils literal"><span class="pre">transaction()</span></code></a> context manager, only the outer-most transaction will be used. However if an exception occurs in a nested block, this can lead to unpredictable behavior, so it is strongly recommended that you use <a class="reference internal" href="api.html#Database.atomic" title="Database.atomic"><code class="xref py py-meth docutils literal"><span class="pre">atomic()</span></code></a>.</p>
+</div>
+<div class="section" id="explicit-savepoints">
+<h3>Explicit Savepoints<a class="headerlink" href="#explicit-savepoints" title="Permalink to this headline">¶</a></h3>
+<p>Just as you can explicitly create transactions, you can also explicitly create savepoints using the <a class="reference internal" href="api.html#Database.savepoint" title="Database.savepoint"><code class="xref py py-meth docutils literal"><span class="pre">savepoint()</span></code></a> method. Savepoints must occur within a transaction, but can be nested arbitrarily deep.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">transaction</span><span class="p">()</span> <span class="k">as</span> <span class="n">txn</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">savepoint</span><span class="p">()</span> <span class="k">as</span> <span class="n">sp</span><span class="p">:</span>
+        <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;mickey&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">db</span><span class="o">.</span><span class="n">savepoint</span><span class="p">()</span> <span class="k">as</span> <span class="n">sp2</span><span class="p">:</span>
+        <span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;zaizee&#39;</span><span class="p">)</span>
+        <span class="n">sp2</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>  <span class="c"># &quot;zaizee&quot; will not be saved, but &quot;mickey&quot; will be.</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you manually commit or roll back a savepoint, a new savepoint <strong>will not</strong> automatically be created. This differs from the behavior of <a class="reference internal" href="api.html#transaction" title="transaction"><code class="xref py py-class docutils literal"><span class="pre">transaction</span></code></a>, which will automatically open a new transaction after manual commit/rollback.</p>
+</div>
+</div>
+</div>
+<div class="section" id="autocommit-mode">
+<h2>Autocommit Mode<a class="headerlink" href="#autocommit-mode" title="Permalink to this headline">¶</a></h2>
+<p>By default, databases are initialized with <code class="docutils literal"><span class="pre">autocommit=True</span></code>, you can turn this on and off at runtime if you like. If you choose to disable autocommit, then you must explicitly call <a class="reference internal" href="api.html#Database.begin" title="Database.begin"><code class="xref py py-meth docutils literal"><span class="pre">Database.begin()</span></code></a> to begin a transaction, and commit or roll back.</p>
+<p>The behavior below is roughly the same as the context manager and decorator:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span><span class="o">.</span><span class="n">set_autocommit</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">user</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+    <span class="k">raise</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+        <span class="k">raise</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">set_autocommit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you would like to manually control <em>every</em> transaction, simply turn autocommit off when instantiating your database:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s">&#39;:memory:&#39;</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+<span class="n">User</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;somebody&#39;</span><span class="p">)</span>
+<span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Transactions</a><ul>
+<li><a class="reference internal" href="#context-manager">Context manager</a></li>
+<li><a class="reference internal" href="#decorator">Decorator</a></li>
+<li><a class="reference internal" href="#nesting-transactions">Nesting Transactions</a></li>
+<li><a class="reference internal" href="#explicit-transaction">Explicit transaction</a><ul>
+<li><a class="reference internal" href="#explicit-savepoints">Explicit Savepoints</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#autocommit-mode">Autocommit Mode</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="querying.html"
+                        title="previous chapter">Querying</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">API Reference</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/peewee/transactions.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="api.html" title="API Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="querying.html" title="Querying"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">peewee 2.6.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright charles leifer.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

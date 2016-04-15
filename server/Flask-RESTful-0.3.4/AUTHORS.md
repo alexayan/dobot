@@ -1,0 +1,103 @@
+Authors
+=======
+
+A huge thanks to all of our contributors:
+
+- Alex Gaynor
+- Alex M
+- Alex Morken
+- Andrew Dunham
+- Andriy Yurchuk
+- Anil Kulkarni
+- Antonio Dourado
+- Antonio Herraiz
+- Artur Rodrigues
+- Axel Haustant
+- Belousow Makc
+- Bennett, Bryan
+- Bohan Zhang
+- Bryan Bennett
+- Bulat Bochkariov
+- Cameron Brandon White
+- Catherine Devlin
+- Dan Quirk
+- Daniele Esposti
+- David Arnold
+- David Baumgold
+- David Boucha
+- David Crawford
+- Dimitris Theodorou
+- Doug Black
+- Evan Dale Aromin
+- Frank Stratton
+- Garret Raziel
+- Gary Belvin
+- Gilles Dartiguelongue
+- Giorgio Salluzzo
+- Guillaume BINET
+- Jacob Magnusson
+- James Booth
+- James Ogura
+- James Turk
+- Joakim Ekberg
+- Johannes
+- Jordan Yelloz
+- Josh Friend
+- Joshua C. Randall
+- Joshua Randall
+- José Fernández Ramos
+- Juan Rossi
+- JuneHyeon Bae
+- Kamil Gałuszka
+- Kevin Burke
+- Kevin Deldycke
+- Kevin Funk
+- Kyle Conroy
+- Lance Ingle
+- Lars Holm Nielsen
+- Luiz Armesto
+- Marek Hlobil
+- Matt Wright
+- Max Peterson
+- Maxim
+- Michael Hwang
+- Michael Newman
+- Miguel Grinberg
+- Mihai Tomescu
+- Pavel Tyslyatsky
+- Petrus J.v.Rensburg
+- Philippe Ndiaye
+- Piotr Husiatyński
+- Prasanna Swaminathan
+- Robert Warner
+- Rod Cloutier
+- Ryan Horn
+- Sam Kimbrel
+- Sander Sink
+- Sasha Baranov
+- Saul Diez-Guerra
+- Sven-Hendrik Haase
+- Usman Ehtesham Gul
+- Victor Neo
+- Vladimir Pal
+- WooParadog
+- Yaniv Aknin
+- bret barker
+- justanr
+- k-funk
+- kelvinhammond
+- kenjones
+- lyschoening
+- mailto1587
+- mniebla
+- mozillazg
+- muchosalsa
+- nachinius
+- nixdata
+- papaeye
+- pingz
+- saml
+- siavashg
+- silasray
+- soasme
+- y-p

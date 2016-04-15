@@ -1,0 +1,7 @@
+name: dobot
+version: 1
+libraries:
+- name: peewee
+  version: "2.6.3"
+- name: passlib
+  version: "1.6.5"
