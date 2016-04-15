@@ -1,5 +1,5 @@
 # Dobot
-直播助手，支持多直播平台。
+使用AngularJS框架开发的斗鱼弹幕机器人，支持自定义指令，弹幕点歌等功能。
 
 ## Build
 
@@ -31,7 +31,7 @@ Run `bower install` for installing the requires
 - *features.music*
   音乐模块，注册!music系统指令，实现弹幕点歌，提供音乐播放管理
 
-## demo
+## demo [测试安装地址](http://mygintama.sinaapp.com/)
 
 ![image](https://raw.githubusercontent.com/alexayan/dobot/master/demo/login.png)
 ![image](https://raw.githubusercontent.com/alexayan/dobot/master/demo/commands.png)
